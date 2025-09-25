@@ -34,11 +34,11 @@ export class UiGraph {
     const b = new StateGraph(this.State);
 
     const updateAll = async (state: typeof this.State.State) => {
-      this.logger.log(`Node(update_all): start for ${state.input.customer}/${state.input.namespace}/${state.input.app}`);
-      const { customer, namespace, app } = state.input;
-      const { pages, components, flowRoot } = await this.fsTool.listAllUiFiles({ customer, namespace, app });
+      this.logger.log(`Node(update_all): start for ${state.input.namespace}/${state.input.app}`);
+      const { namespace, app } = state.input;
+      const { pages, components, flowRoot } = await this.fsTool.listAllUiFiles({ namespace, app });
       this.logger.log(`Node(update_all): discovered pages=${pages.length}, components=${components.length}`);
-      const targetPath = this.fsTool.getUiJsonPath(customer, namespace, app);
+      const targetPath = this.fsTool.getUiJsonPath(namespace, app);
       const results: Array<{ key: string; kind: 'page' | 'component' }> = [];
 
       for (const filePath of [...pages, ...components]) {
@@ -85,7 +85,7 @@ export class UiGraph {
   }
 
   async run(input: UiInput): Promise<any> {
-    this.logger.log(`Run(action=${input.action}) for ${input.customer}/${input.namespace}/${input.app}`);
+    this.logger.log(`Run(action=${input.action}) for ${input.namespace}/${input.app}`);
     const g = await this.compile();
     const out = await g.invoke({ input });
     const updated = out?.result?.updated ?? 0;

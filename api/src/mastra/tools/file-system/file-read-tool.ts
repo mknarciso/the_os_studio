@@ -3,14 +3,13 @@
  *
  * What it does
  * - Reads text content from a .js/.jsx/.ts file that belongs to an app in the OS (web/backend/supabase)
- * - Resolves target path based on project identifiers (customer/namespace/app or projectPath)
+ * - Resolves target path based on project identifiers (namespace/app or projectPath)
  * - Enforces access only within allowed locations (pages | components | navigation)
  * - Emits an internal event `tool:used` when executed (used by UI badges)
  *
  * Inputs (JSON)
  * - area: 'pages' | 'data' | 'automations' | 'documentation' (currently only 'pages' resolves paths)
  * - projectPath?: string — '/apps/{namespace}/{app}' (recommended)
- * - customer?: string — if omitted, derived from projectPath/namespace
  * - namespace?: string — if omitted, derived from projectPath
  * - app?: string — if omitted, derived from projectPath
  * - location: 'pages' | 'components' | 'navigation'
@@ -18,8 +17,8 @@
  *
  * Outputs (JSON)
  * - fullPath: absolute file path on disk
- * - osPath: path relative to the customer root (e.g. 'web/src/pages/{ns}/{camel}/File.jsx')
- * - appPath: path relative to the app root under preview_customers (e.g. '{ns}/{app}/pages/File.jsx')
+ * - osPath: path relative to the root (e.g. 'web/src/pages/{ns}/{camel}/File.jsx')
+ * - appPath: path relative to the app root under workspace (e.g. '{ns}/{app}/pages/File.jsx')
  * - content: file content
  *
  * How to use
@@ -45,7 +44,7 @@ import { toolBus } from '../../../utils/event-bus';
 
 export const fileReadTool = createTool({
   id: 'file-read-tool',
-  description: 'Lê o conteúdo de um arquivo. Informe apenas osPath; customer/namespace/app vêm do runtimeContext.',
+  description: 'Lê o conteúdo de um arquivo. Informe apenas osPath; namespace/app vêm do runtimeContext.',
   inputSchema: z.object({
     osPath: z.string(),
   }),
@@ -93,7 +92,6 @@ export const fileReadTool = createTool({
       console.log('[fileReadTool] a1Keys:', a1 && typeof a1 === 'object' ? Object.keys(a1) : typeof a1);
       console.log('[fileReadTool] ctx.hasInput:', Boolean((a0 as any)?.input), 'ctx.hasArgs:', Boolean((a0 as any)?.args));
       console.log('[fileReadTool] inputPreview:', {
-        customer: (input as any)?.customer,
         osPath: (input as any)?.osPath,
       });
     } catch {}
@@ -101,11 +99,7 @@ export const fileReadTool = createTool({
     if (!input || typeof input !== 'object') {
       throw new Error('Parâmetros inválidos: objeto de entrada não recebido');
     }
-    const customer = ((a0 as any)?.runtimeContext?.get?.('customer') as string) || ((a1 as any)?.runtimeContext?.get?.('customer') as string);
-    if (!customer) {
-      throw new Error('file-read-tool: runtimeContext.customer ausente');
-    }
-    const target = await toFullPathFromOsPath(customer, input.osPath);
+    const target = await toFullPathFromOsPath(input.osPath);
     const ext = path.extname(target);
     assertAllowedExtension(`file${ext}`);
 

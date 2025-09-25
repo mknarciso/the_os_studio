@@ -10,20 +10,24 @@
  * - Paste the returned config into the indicated hint path in your IDE
  */
 import { createTool } from '@mastra/core/tools';
+import type { Tool } from '@mastra/core/tools';
 import { z } from 'zod';
 
 // Provides a ready-to-copy MCP config for Mastra docs registry
-export const mastraDocsMcpTool = createTool({
+const inputSchema = z.object({
+  ide: z.enum(['cursor', 'windsurf']).optional().describe('IDE de destino para dica de caminho do arquivo de config'),
+});
+const outputSchema = z.object({
+  config: z.any(),
+  hintPath: z.string(),
+});
+
+export const mastraDocsMcpTool: Tool<typeof inputSchema, typeof outputSchema> = createTool({
   id: 'mastra-docs-mcp-tool',
   description: 'Retorna um JSON de configuração MCP para acesso à documentação da Mastra em IDEs compatíveis (Cursor/Windsurf).',
-  inputSchema: z.object({
-    ide: z.enum(['cursor', 'windsurf']).optional().describe('IDE de destino para dica de caminho do arquivo de config'),
-  }),
-  outputSchema: z.object({
-    config: z.any(),
-    hintPath: z.string(),
-  }),
-  execute: async (context) => {
+  inputSchema,
+  outputSchema,
+  execute: async ({ context }) => {
     // Minimal example — a registry server could be expanded later
     const config = {
       mcpServers: {
@@ -34,7 +38,7 @@ export const mastraDocsMcpTool = createTool({
       },
     };
 
-    const ide = context.input.ide ?? 'cursor';
+    const ide = (context as any).ide ?? 'cursor';
     const hintPath = ide === 'cursor' ? '.cursor/mcp.json' : '.codeium/windsurf/mcp_config.json';
 
     return {

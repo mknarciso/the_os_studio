@@ -1,5 +1,7 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { Agent } from '@mastra/core/agent';
+import type { Agent as AgentType } from '@mastra/core/agent';
+import type { ToolExecutionContext } from '@mastra/core/tools';
 import { fileReadTool } from '../tools/file-system/file-read-tool';
 import { fileCreateTool } from '../tools/file-system/file-create-tool';
 import { filePatchTool } from '../tools/file-system/file-patch-tool';
@@ -13,13 +15,13 @@ const openai = createOpenAI();
 
 let zazOSreadmeContent = '';
 try {
-  const readmePath = path.resolve(process.cwd(), '..', 'preview_customers', 'quero', 'README.md');
+  const readmePath = path.resolve(process.cwd(), '..', '..', 'README.md');
   zazOSreadmeContent = readFileSync(readmePath, 'utf8');
 } catch (error) {
   zazOSreadmeContent = 'README não disponível.';
 }
 
-export const staffDeveloperAgent = new Agent({
+export const staffDeveloperAgent: AgentType = new Agent({
   name: 'Staff Developer Agent',
   instructions: async ({ runtimeContext }) => {
     const base = `
@@ -60,7 +62,11 @@ export const staffDeveloperAgent = new Agent({
     `;
 
     try {
-      const editable = await fileEditableListTool.execute({ context: {}, runtimeContext });
+      const editable = await fileEditableListTool.execute({
+        context: {},
+        runtimeContext,
+        suspend: async () => ({} as any),
+      } as unknown as ToolExecutionContext<any, any, any>);
       const injected = [
         '<list_of_editable_files>',
         'If you want/need to update this list, use the file-editable-list-tool.',

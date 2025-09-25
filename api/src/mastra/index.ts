@@ -1,4 +1,5 @@
 import { Mastra } from '@mastra/core/mastra';
+import type { Mastra as MastraType } from '@mastra/core/mastra';
 import { LibSQLStore } from '@mastra/libsql';
 import * as path from 'node:path';
 import { brandDesignerWorkflow } from './branding/workflows/brand-designer-workflow';
@@ -25,7 +26,7 @@ const storage = new LibSQLStore({
   url: storageUrl,
 });
 
-export const mastra = new Mastra({
+export const mastra: MastraType = new Mastra({
   workflows: {
     brandDesignerWorkflow,
     helloWorldWorkflow,

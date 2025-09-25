@@ -3,10 +3,6 @@ import { IsString, IsNotEmpty } from 'class-validator';
 export class SaveFileDto {
   @IsString()
   @IsNotEmpty()
-  customer: string;
-
-  @IsString()
-  @IsNotEmpty()
   namespace: string;
 
   @IsString()

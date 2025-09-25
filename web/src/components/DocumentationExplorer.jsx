@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { ApiService } from '../services/api';
 
-export function DocumentationExplorer({ customer = 'quero', namespace = 'quero', app = 'flow' }) {
+export function DocumentationExplorer({ namespace = 'quero', app = 'flow' }) {
   const [documentation, setDocumentation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,13 +36,13 @@ export function DocumentationExplorer({ customer = 'quero', namespace = 'quero',
 
   useEffect(() => {
     loadDocumentation();
-  }, [customer, namespace, app]);
+  }, [namespace, app]);
 
   const loadDocumentation = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await ApiService.getDocumentation(customer, namespace, app);
+      const data = await ApiService.getDocumentation(namespace, app);
       setDocumentation(data);
     } catch (err) {
       setError(err.message);

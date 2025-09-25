@@ -1,4 +1,5 @@
 import { createTool } from '@mastra/core/tools';
+import type { Tool } from '@mastra/core/tools';
 import { z } from 'zod';
 
 const ensureAbsolute = (origin: string, href: string): string => {
@@ -29,19 +30,22 @@ const detectSection = (snippet: string): string => {
 
 const sanitizePart = (s: string): string => s.toLowerCase().replace(/[^a-z0-9._-]/g, '-');
 
-export const brandImagesBucketTool = createTool({
+const inputSchema = z.object({
+  origin: z.string(),
+  homepageHtml: z.string(),
+  runDir: z.string(),
+  maxImages: z.number().optional().default(12),
+});
+const outputSchema = z.object({
+  saved: z.array(z.string()),
+  skipped: z.array(z.string()).optional(),
+});
+
+export const brandImagesBucketTool: Tool<typeof inputSchema, typeof outputSchema> = createTool({
   id: 'brand-images-bucket-tool',
   description: 'Coleta imagens relevantes da homepage e salva em runs/{run}/images-bucket evitando logos de clientes',
-  inputSchema: z.object({
-    origin: z.string(),
-    homepageHtml: z.string(),
-    runDir: z.string(),
-    maxImages: z.number().optional().default(12),
-  }),
-  outputSchema: z.object({
-    saved: z.array(z.string()),
-    skipped: z.array(z.string()).optional(),
-  }),
+  inputSchema,
+  outputSchema,
   execute: async ({ context }) => {
     const { origin, homepageHtml, runDir, maxImages } = context as { origin: string; homepageHtml: string; runDir: string; maxImages?: number };
     const path = await import('node:path');

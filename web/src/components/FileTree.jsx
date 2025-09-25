@@ -2,23 +2,23 @@ import { useState, useEffect } from 'react';
 import { ChevronRight, ChevronDown, FileText, Code, Image, Settings, Database, Palette, Globe, Package } from 'lucide-react';
 import { ApiService } from '../services/api';
 
-export function FileTree({ customer, namespace, app, selectedFile, onFileSelect, basePath = '', title = 'Explorer', whitelistRoots = null }) {
+export function FileTree({ namespace, app, selectedFile, onFileSelect, basePath = '', title = 'Explorer', whitelistRoots = null }) {
   const [fileTree, setFileTree] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedDirs, setExpandedDirs] = useState(new Set());
 
   useEffect(() => {
-    if (customer && namespace && app) {
+    if (namespace && app) {
       loadFileTree();
     }
-  }, [customer, namespace, app, basePath]);
+  }, [namespace, app, basePath]);
 
   const loadFileTree = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await ApiService.getFileTree(customer, namespace, app, basePath);
+      const data = await ApiService.getFileTree(namespace, app, basePath);
       let tree = data.tree;
       // Apply whitelist at root level if provided
       if (whitelistRoots && Array.isArray(whitelistRoots) && whitelistRoots.length > 0 && tree && tree.path === '.') {

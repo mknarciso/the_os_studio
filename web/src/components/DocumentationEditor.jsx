@@ -21,7 +21,7 @@ const entitySchemas = {
   testCase: TestCaseSchema,
 };
 
-export function DocumentationEditor({ customer = 'quero', namespace = 'quero', app = 'flow', selectedEntity, onSave, onDelete }) {
+export function DocumentationEditor({ namespace = 'quero', app = 'flow', selectedEntity, onSave, onDelete }) {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -49,11 +49,11 @@ export function DocumentationEditor({ customer = 'quero', namespace = 'quero', a
   const loadAvailableOptions = async () => {
     try {
       const [flows, roles, activities, stories, vendors] = await Promise.all([
-        ApiService.getEntities(customer, namespace, app, 'flows'),
-        ApiService.getEntities(customer, namespace, app, 'roles'),
-        ApiService.getEntities(customer, namespace, app, 'activities'),
-        ApiService.getEntities(customer, namespace, app, 'stories'),
-        ApiService.getEntities(customer, namespace, app, 'vendors')
+        ApiService.getEntities(namespace, app, 'flows'),
+        ApiService.getEntities(namespace, app, 'roles'),
+        ApiService.getEntities(namespace, app, 'activities'),
+        ApiService.getEntities(namespace, app, 'stories'),
+        ApiService.getEntities(namespace, app, 'vendors')
       ]);
       
       setAvailableOptions({ flows, roles, activities, stories, vendors });
@@ -70,7 +70,7 @@ export function DocumentationEditor({ customer = 'quero', namespace = 'quero', a
 
     try {
       setLoading(true);
-      const data = await ApiService.getDocumentation(customer, namespace, app);
+      const data = await ApiService.getDocumentation(namespace, app);
       
       let entityData = {};
       switch (selectedEntity.type) {
@@ -219,37 +219,37 @@ export function DocumentationEditor({ customer = 'quero', namespace = 'quero', a
       
       switch (selectedEntity.type) {
         case 'app':
-          result = await ApiService.updateApp(customer, namespace, app, formData);
+          result = await ApiService.updateApp(namespace, app, formData);
           break;
         case 'flow':
           result = isNew 
-            ? await ApiService.createEntity(customer, namespace, app, 'flows', formData)
-            : await ApiService.updateEntity(customer, namespace, app, 'flows', selectedEntity.slug, formData);
+            ? await ApiService.createEntity(namespace, app, 'flows', formData)
+            : await ApiService.updateEntity(namespace, app, 'flows', selectedEntity.slug, formData);
           break;
         case 'role':
           result = isNew 
-            ? await ApiService.createEntity(customer, namespace, app, 'roles', formData)
-            : await ApiService.updateEntity(customer, namespace, app, 'roles', selectedEntity.slug, formData);
+            ? await ApiService.createEntity(namespace, app, 'roles', formData)
+            : await ApiService.updateEntity(namespace, app, 'roles', selectedEntity.slug, formData);
           break;
         case 'activity':
           result = isNew 
-            ? await ApiService.createEntity(customer, namespace, app, 'activities', formData)
-            : await ApiService.updateEntity(customer, namespace, app, 'activities', selectedEntity.slug, formData);
+            ? await ApiService.createEntity(namespace, app, 'activities', formData)
+            : await ApiService.updateEntity(namespace, app, 'activities', selectedEntity.slug, formData);
           break;
         case 'story':
           result = isNew 
-            ? await ApiService.createEntity(customer, namespace, app, 'stories', formData)
-            : await ApiService.updateEntity(customer, namespace, app, 'stories', selectedEntity.slug, formData);
+            ? await ApiService.createEntity(namespace, app, 'stories', formData)
+            : await ApiService.updateEntity(namespace, app, 'stories', selectedEntity.slug, formData);
           break;
         case 'vendor':
           result = isNew 
-            ? await ApiService.createEntity(customer, namespace, app, 'vendors', formData)
-            : await ApiService.updateEntity(customer, namespace, app, 'vendors', selectedEntity.slug, formData);
+            ? await ApiService.createEntity(namespace, app, 'vendors', formData)
+            : await ApiService.updateEntity(namespace, app, 'vendors', selectedEntity.slug, formData);
           break;
         case 'testCase':
           result = isNew 
-            ? await ApiService.createEntity(customer, namespace, app, 'test-cases', formData)
-            : await ApiService.updateEntity(customer, namespace, app, 'test-cases', selectedEntity.slug, formData);
+            ? await ApiService.createEntity(namespace, app, 'test-cases', formData)
+            : await ApiService.updateEntity(namespace, app, 'test-cases', selectedEntity.slug, formData);
           break;
       }
       
@@ -270,22 +270,22 @@ export function DocumentationEditor({ customer = 'quero', namespace = 'quero', a
       
       switch (selectedEntity.type) {
         case 'flow':
-          await ApiService.deleteEntity(customer, namespace, app, 'flows', selectedEntity.slug);
+          await ApiService.deleteEntity(namespace, app, 'flows', selectedEntity.slug);
           break;
         case 'role':
-          await ApiService.deleteEntity(customer, namespace, app, 'roles', selectedEntity.slug);
+          await ApiService.deleteEntity(namespace, app, 'roles', selectedEntity.slug);
           break;
         case 'activity':
-          await ApiService.deleteEntity(customer, namespace, app, 'activities', selectedEntity.slug);
+          await ApiService.deleteEntity(namespace, app, 'activities', selectedEntity.slug);
           break;
         case 'story':
-          await ApiService.deleteEntity(customer, namespace, app, 'stories', selectedEntity.slug);
+          await ApiService.deleteEntity(namespace, app, 'stories', selectedEntity.slug);
           break;
         case 'vendor':
-          await ApiService.deleteEntity(customer, namespace, app, 'vendors', selectedEntity.slug);
+          await ApiService.deleteEntity(namespace, app, 'vendors', selectedEntity.slug);
           break;
         case 'testCase':
-          await ApiService.deleteEntity(customer, namespace, app, 'test-cases', selectedEntity.slug);
+          await ApiService.deleteEntity(namespace, app, 'test-cases', selectedEntity.slug);
           break;
       }
       

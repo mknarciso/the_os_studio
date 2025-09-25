@@ -6,10 +6,11 @@
  * - Helps the agent know which files are editable for the current context
  *
  * How to use
- * - Variáveis `customer`, `namespace`, `app` vêm do runtimeContext (não do input)
+ * - Variáveis `namespace`, `app` vêm do runtimeContext (não do input)
  * - Sempre retorna todos os arquivos relevantes nas áreas mapeadas
  */
 import { createTool } from '@mastra/core/tools';
+import type { Tool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { toOsPathFromFull } from './fs-utils';
 import { resolveOsAppPaths, resolveIdentifiers } from './fs-utils';
@@ -20,32 +21,33 @@ type TreeNode = {
   children?: TreeNode[];
 };
 
-export const fileEditableListTool = createTool({
+const inputSchema = z.object({});
+const outputSchema = z.object({
+  areas: z.object({
+    data: z.array(z.string()),
+    scopes: z.array(z.string()),
+    pages: z.array(z.string()),
+    automations: z.array(z.string()),
+  }),
+});
+
+export const fileEditableListTool: Tool<typeof inputSchema, typeof outputSchema> = createTool({
   id: 'file-editable-list-tool',
   description:
     'Retorna uma lista categorizada (OS: supabase+backend+web) do app atual para edição pela AI. Junta Data, Scopes, Pages e Automations. Estes são os arquivos que você pode editar.',
-  inputSchema: z.object({}),
-  outputSchema: z.object({
-    areas: z.object({
-      data: z.array(z.string()),
-      scopes: z.array(z.string()),
-      pages: z.array(z.string()),
-      automations: z.array(z.string()),
-    }),
-  }),
+  inputSchema,
+  outputSchema,
   execute: async ({ context, runtimeContext }) => {
     const path = await import('node:path');
     const fs = await import('node:fs/promises');
 
     // Resolve identifiers from runtimeContext (required)
-    const customer = (runtimeContext.get('customer') as string) || 'quero';
     const namespace = (runtimeContext.get('namespace') as string) || 'quero';
     const app = (runtimeContext.get('app') as string) || 'flow';
 
-    if (!customer || !namespace || !app) {
+    if (!namespace || !app) {
       throw new Error(
-        'file-editable-list-tool: runtimeContext deve conter customer, namespace e app'+
-        '\ncustomer: ' + customer +
+        'file-editable-list-tool: runtimeContext deve conter namespace e app'+
         '\nnamespace: ' + namespace +
         '\napp: ' + app
       );
@@ -53,8 +55,8 @@ export const fileEditableListTool = createTool({
 
     // projectPath pode ser derivado como {namespace}/{app} se necessário
     const derivedProjectPath = `${namespace}/${app}`;
-    const ids = resolveIdentifiers(customer, namespace, app, derivedProjectPath);
-    const os = await resolveOsAppPaths(ids.customer, ids.namespace, ids.app);
+    const ids = resolveIdentifiers(namespace, app, derivedProjectPath);
+    const os = await resolveOsAppPaths(ids.namespace, ids.app);
 
     // Areas mapping
     // Data: migrations + seed
@@ -62,12 +64,12 @@ export const fileEditableListTool = createTool({
     const migrations = await fs.readdir(os.supabase.migrationsDir).catch(() => []);
     for (const f of migrations) {
       if (f.includes(`__${os.schemaName}__`)) {
-        dataPaths.push(await toOsPathFromFull(path.resolve(os.supabase.migrationsDir, f), ids.customer));
+        dataPaths.push(await toOsPathFromFull(path.resolve(os.supabase.migrationsDir, f)));
       }
     }
     const seedEntries = await fs.readdir(os.supabase.seedDir).catch(() => []);
     for (const f of seedEntries) {
-      dataPaths.push(await toOsPathFromFull(path.resolve(os.supabase.seedDir, f), ids.customer));
+      dataPaths.push(await toOsPathFromFull(path.resolve(os.supabase.seedDir, f)));
     }
 
     // Scopes: backend controllers under namespace/app
@@ -81,7 +83,7 @@ export const fileEditableListTool = createTool({
           if (e.isDirectory()) {
             await walkControllers(full);
           } else if (e.isFile()) {
-            scopesPaths.push(await toOsPathFromFull(full, ids.customer));
+            scopesPaths.push(await toOsPathFromFull(full));
           }
         }
       };
@@ -94,19 +96,19 @@ export const fileEditableListTool = createTool({
     if (hasPagesDir) {
       const entries = await fs.readdir(os.web.pagesDir).catch(() => []);
       for (const f of entries) {
-        pagesPaths.push(await toOsPathFromFull(path.resolve(os.web.pagesDir, f), ids.customer));
+        pagesPaths.push(await toOsPathFromFull(path.resolve(os.web.pagesDir, f)));
       }
       // layout is optional
       const layoutExists = await fs.stat(os.web.layoutPath).then(() => true).catch(() => false);
       if (layoutExists) {
-        pagesPaths.push(await toOsPathFromFull(os.web.layoutPath, ids.customer));
+        pagesPaths.push(await toOsPathFromFull(os.web.layoutPath));
       }
     }
 
     // Ensure navigation file is included in pages
     const navExists = await fs.stat(os.web.navigationFile).then(() => true).catch(() => false);
     if (navExists) {
-      pagesPaths.push(await toOsPathFromFull(os.web.navigationFile, ids.customer));
+      pagesPaths.push(await toOsPathFromFull(os.web.navigationFile));
     }
 
     // Ensure components directory files are included in pages
@@ -119,7 +121,7 @@ export const fileEditableListTool = createTool({
           if (e.isDirectory()) {
             await walkComponents(full);
           } else if (e.isFile()) {
-            pagesPaths.push(await toOsPathFromFull(full, ids.customer));
+            pagesPaths.push(await toOsPathFromFull(full));
           }
         }
       };
@@ -137,7 +139,7 @@ export const fileEditableListTool = createTool({
           if (e.isDirectory()) {
             await walk(full);
           } else if (e.isFile()) {
-            automationsPaths.push(await toOsPathFromFull(full, ids.customer));
+            automationsPaths.push(await toOsPathFromFull(full));
           }
         }
       };
@@ -152,7 +154,7 @@ export const fileEditableListTool = createTool({
         const triggersPath = path.resolve(appDir, 'triggers.ts');
         const exists = await fs.stat(triggersPath).then(() => true).catch(() => false);
         if (exists) {
-          automationsPaths.push(await toOsPathFromFull(triggersPath, ids.customer));
+          automationsPaths.push(await toOsPathFromFull(triggersPath));
         }
       }
     }

@@ -9,7 +9,7 @@
     "build": "nest build",
     "start": "nest start",
     "start:nest": "MASTRA_STORAGE_URL=\"file:./data/mastra/mastra.db\" NODE_OPTIONS=--import=./.mastra/output/instrumentation.mjs nest start --watch",
-    "start:mastra": "MASTRA_STORAGE_URL=\"file:./data/mastra/mastra.db\" MASTRA_WORKSPACE_ROOT=\"/Users/mknarciso/Work/Zazos Maestro\" mastra dev",
+    "start:mastra": "MASTRA_STORAGE_URL=\"file:./data/mastra/mastra.db\" MASTRA_WORKSPACE_ROOT=\"$(pwd)/../..\" mastra dev",
     "start:dev": "concurrently -k -n nest,mastra \"npm run start:nest\" \"npm run start:mastra\"",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -23,16 +23,16 @@
     "@langchain/core": "^0.3.75",
     "@langchain/langgraph": "^0.4.9",
     "@langchain/openai": "^0.6.12",
-    "@mastra/core": "^0.17.1",
-    "@mastra/libsql": "^0.14.2",
-    "@mastra/memory": "^0.15.2",
+    "@mastra/core": "^0.18.0",
+    "@mastra/libsql": "^0.14.3",
+    "@mastra/memory": "^0.15.3",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.1.3",
     "@types/multer": "^2.0.0",
     "@types/uuid": "^10.0.0",
-    "@zazos/schemas": "file:../../shared/schemas",
+    "@zazos/schemas": "file:../../schemas",
     "ai": "^5.0.28",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
@@ -48,7 +48,7 @@
     "rxjs": "^7.8.1",
     "uuid": "^11.1.0",
     "yaml": "^2.8.1",
-    "zod": "^4.1.5"
+    "zod": "^4.1.11"
   },
   "overrides": {
     "@ai-sdk/openai": {

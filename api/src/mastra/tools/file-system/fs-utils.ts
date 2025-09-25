@@ -4,7 +4,7 @@
  * What it provides
  * - Area/Location schemas to scope edits (pages/components/navigation)
  * - Workspace root detection under Studio API
- * - Resolution of OS paths for a given customer/namespace/app (or projectPath)
+ * - Resolution of OS paths for a given namespace/app (or projectPath)
  * - Guards: extension allow-list and base directory checks
  *
  * Usage notes
@@ -36,12 +36,11 @@ export const getWorkspaceRoot = async (): Promise<string> => {
     return path.resolve(String(envRoot));
   }
   // API CWD is expected at studio/api
-  // Go two levels up to repo root
+  // Go two levels up to root
   return path.resolve(process.cwd(), '../../');
 };
 
 export const resolvePagesBaseDir = async (
-  customer: string,
   namespace: string,
   app: string,
   location: ToolLocation
@@ -58,7 +57,7 @@ export const resolvePagesBaseDir = async (
   let appSegment = app;
   if (location === 'pages') {
     try {
-      const { appPath } = await resolveAppConfigCamelName(customer, namespace, app);
+      const { appPath } = await resolveAppConfigCamelName(namespace, app);
       appSegment = appPath || app;
     } catch {
       appSegment = app;
@@ -66,8 +65,6 @@ export const resolvePagesBaseDir = async (
   }
   const computed = path.resolve(
     root,
-    'preview_customers',
-    customer,
     'web',
     'src',
     subDir,
@@ -96,7 +93,6 @@ export const assertAllowedExtension = (fileName: string) => {
 
 export const buildTargetPath = async (
   area: ToolArea,
-  customer: string,
   namespace: string,
   app: string,
   location: ToolLocation,
@@ -105,7 +101,7 @@ export const buildTargetPath = async (
   if (area !== 'pages') {
     console.log('[fs-utils.buildTargetPath] non-pages area received:', area);
   }
-  const baseDir = await resolvePagesBaseDir(customer, namespace, app, location);
+  const baseDir = await resolvePagesBaseDir(namespace, app, location);
   await ensureWithinBase(baseDir, relativeFilePath);
   const path = await import('node:path');
   const target = path.resolve(baseDir, relativeFilePath);
@@ -119,7 +115,7 @@ export const buildTargetPath = async (
 // =============================
 
 export type OsAppPaths = {
-  customerRoot: string; // preview_customers/{customer}
+  workspaceRoot: string;
   appConfigPath: string; // apps/{namespace}/{app}/appConfig.json
   namespace: string;
   app: string;
@@ -149,21 +145,14 @@ export type OsAppPaths = {
   };
 };
 
-export const getCustomerRoot = async (customer: string): Promise<string> => {
-  const path = await import('node:path');
-  const root = await getWorkspaceRoot();
-  return path.resolve(root, 'preview_customers', customer);
-};
-
 export const resolveAppConfigCamelName = async (
-  customer: string,
   namespace: string,
   app: string
 ): Promise<{ appPath: string; appConfigPath: string }> => {
   const fs = await import('node:fs/promises');
   const path = await import('node:path');
-  const customerRoot = await getCustomerRoot(customer);
-  const appConfigPath = path.resolve(customerRoot, 'apps', namespace, app, 'appConfig.json');
+  const workspaceRoot = await getWorkspaceRoot();
+  const appConfigPath = path.resolve(workspaceRoot, 'apps', namespace, app, 'appConfig.json');
   let appPath = app;
   try {
     const raw = await fs.readFile(appConfigPath, 'utf8');
@@ -185,21 +174,20 @@ export const computeSchemaName = (namespace: string, app: string): string => {
 };
 
 export const resolveOsAppPaths = async (
-  customer: string,
   namespace: string,
   app: string
 ): Promise<OsAppPaths> => {
   const path = await import('node:path');
-  const customerRoot = await getCustomerRoot(customer);
-  const { appPath, appConfigPath } = await resolveAppConfigCamelName(customer, namespace, app);
+  const workspaceRoot = await getWorkspaceRoot();
+  const { appPath, appConfigPath } = await resolveAppConfigCamelName(namespace, app);
   const schemaName = computeSchemaName(namespace, app);
 
-  const webRoot = path.resolve(customerRoot, 'web');
-  const backendRoot = path.resolve(customerRoot, 'backend');
-  const supabaseRoot = path.resolve(customerRoot, 'supabase');
+  const webRoot = path.resolve(workspaceRoot, 'web');
+  const backendRoot = path.resolve(workspaceRoot, 'backend');
+  const supabaseRoot = path.resolve(workspaceRoot, 'supabase');
 
   return {
-    customerRoot,
+    workspaceRoot,
     appConfigPath,
     namespace,
     app,
@@ -228,14 +216,12 @@ export const resolveOsAppPaths = async (
 };
 
 export const resolveIdentifiers = (
-  customer: string | undefined,
   namespace: string | undefined,
   app: string | undefined,
   projectPath?: string
-): { customer: string; namespace: string; app: string } => {
+): { namespace: string; app: string } => {
   let ns = namespace && namespace.trim().length > 0 ? namespace : undefined;
   let a = app && app.trim().length > 0 ? app : undefined;
-  let cust = customer && customer.trim().length > 0 ? customer : undefined;
 
   if ((!ns || !a) && projectPath) {
     const parts = projectPath.split('/').filter(Boolean);
@@ -245,13 +231,10 @@ export const resolveIdentifiers = (
       a = a || parts[idx + 2];
     }
   }
-  if (!cust && ns) {
-    cust = ns;
+  if (!ns || !a) {
+    throw new Error('Parâmetros insuficientes: informe namespace e app, ou projectPath=/apps/{namespace}/{app}');
   }
-  if (!cust || !ns || !a) {
-    throw new Error('Parâmetros insuficientes: informe customer, namespace e app, ou projectPath=/apps/{namespace}/{app}');
-  }
-  return { customer: cust, namespace: ns, app: a };
+  return { namespace: ns, app: a };
 };
 
 
@@ -259,56 +242,54 @@ export const resolveIdentifiers = (
 // Path standardization helpers
 // =============================
 
-export const toOsPathFromFull = async (fullPath: string, customer: string): Promise<string> => {
+export const toOsPathFromFull = async (fullPath: string): Promise<string> => {
   const path = await import('node:path');
-  const customerRoot = await getCustomerRoot(customer);
-  const rel = path.relative(customerRoot, fullPath).replace(/\\/g, '/');
+  const workspaceRoot = await getWorkspaceRoot();
+  const rel = path.relative(workspaceRoot, fullPath).replace(/\\/g, '/');
   return rel;
 };
 
-export const toAppPathFromFull = async (fullPath: string, customer: string): Promise<string> => {
+export const toAppPathFromFull = async (fullPath: string): Promise<string> => {
   const path = await import('node:path');
-  const customerRoot = await getCustomerRoot(customer);
-  const appsRoot = path.resolve(customerRoot, 'apps');
+  const workspaceRoot = await getWorkspaceRoot();
+  const appsRoot = path.resolve(workspaceRoot, 'apps');
   const rel = path.relative(appsRoot, fullPath).replace(/\\/g, '/');
   return rel;
 };
 
-export const toFullPathFromOsPath = async (customer: string, osPath: string): Promise<string> => {
+export const toFullPathFromOsPath = async (osPath: string): Promise<string> => {
   const path = await import('node:path');
-  const customerRoot = await getCustomerRoot(customer);
-  return path.resolve(customerRoot, osPath);
+  const workspaceRoot = await getWorkspaceRoot();
+  return path.resolve(workspaceRoot, osPath);
 };
 
-export const toFullPathFromAppPath = async (customer: string, appPath: string): Promise<string> => {
+export const toFullPathFromAppPath = async (appPath: string): Promise<string> => {
   const path = await import('node:path');
-  const customerRoot = await getCustomerRoot(customer);
-  return path.resolve(customerRoot, 'apps', appPath);
+  const workspaceRoot = await getWorkspaceRoot();
+  return path.resolve(workspaceRoot, 'apps', appPath);
 };
 
 export const resolveFullPathFromAny = async (
-  customer: string,
   opts: { osPath?: string; appPath?: string; fullPath?: string }
 ): Promise<{ fullPath: string; osPath: string; appPath: string }> => {
   const { osPath, appPath, fullPath } = opts;
-  if (!customer) throw new Error('customer é obrigatório');
   const provided = [Boolean(osPath), Boolean(appPath), Boolean(fullPath)].filter(Boolean).length;
   if (provided !== 1) {
     throw new Error('Informe exatamente um dos caminhos: osPath, appPath ou fullPath');
   }
   if (fullPath) {
-    const os = await toOsPathFromFull(fullPath, customer);
-    const app = await toAppPathFromFull(fullPath, customer);
+    const os = await toOsPathFromFull(fullPath);
+    const app = await toAppPathFromFull(fullPath);
     return { fullPath, osPath: os, appPath: app };
   }
   if (osPath) {
-    const full = await toFullPathFromOsPath(customer, osPath);
-    const app = await toAppPathFromFull(full, customer);
+    const full = await toFullPathFromOsPath(osPath);
+    const app = await toAppPathFromFull(full);
     return { fullPath: full, osPath, appPath: app };
   }
   // appPath
-  const full = await toFullPathFromAppPath(customer, appPath as string);
-  const os = await toOsPathFromFull(full, customer);
+  const full = await toFullPathFromAppPath(appPath as string);
+  const os = await toOsPathFromFull(full);
   return { fullPath: full, osPath: os, appPath: appPath as string };
 };
 

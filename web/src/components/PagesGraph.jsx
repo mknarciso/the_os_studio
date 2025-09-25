@@ -317,7 +317,7 @@ const getForceLayoutedElements = (nodes, edges) => {
   return { nodes: finalNodes, edges };
 };
 
-const PagesGraph = ({ customer, namespace, app, uiData }) => {
+const PagesGraph = ({ namespace, app, uiData }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNodeId, setSelectedNodeId] = useState(null);
@@ -333,7 +333,7 @@ const PagesGraph = ({ customer, namespace, app, uiData }) => {
       return;
     }
 
-    if (!customer || !namespace || !app) {
+    if (!namespace || !app) {
       return;
     }
 
@@ -344,7 +344,7 @@ const PagesGraph = ({ customer, namespace, app, uiData }) => {
         
         // Try to load ui.json from docs folder
         const uiJsonPath = 'docs/ui.json';
-        const response = await ApiService.getFileContent(customer, namespace, app, uiJsonPath);
+        const response = await ApiService.getFileContent(namespace, app, uiJsonPath);
         const parsedData = JSON.parse(response.content);
         setLoadedUiData(parsedData);
       } catch (err) {
@@ -356,7 +356,7 @@ const PagesGraph = ({ customer, namespace, app, uiData }) => {
     };
 
     loadUiData();
-  }, [customer, namespace, app, uiData]);
+  }, [namespace, app, uiData]);
 
   // Parse UI data and create nodes and edges
   const { parsedNodes, parsedEdges } = useMemo(() => {
@@ -525,7 +525,7 @@ const PagesGraph = ({ customer, namespace, app, uiData }) => {
         <div className="text-center">
           <div className="text-xl mb-2">Loading UI Graph...</div>
           <div className="text-sm text-gray-400">
-            Reading ui.json from {customer}/{namespace}/{app}
+            Reading ui.json from {namespace}/{app}
           </div>
         </div>
       </div>
@@ -541,7 +541,7 @@ const PagesGraph = ({ customer, namespace, app, uiData }) => {
             {error}
           </div>
           <div className="text-xs text-gray-500">
-            Make sure docs/ui.json exists in {customer}/{namespace}/{app}
+            Make sure docs/ui.json exists in {namespace}/{app}
           </div>
         </div>
       </div>
@@ -604,11 +604,11 @@ const PagesGraph = ({ customer, namespace, app, uiData }) => {
           <button
             onClick={async () => {
               try {
-                const res = await ApiService.runUiGraph({ action: 'update_all', customer, namespace, app });
+                const res = await ApiService.runUiGraph({ action: 'update_all', namespace, app });
                 const updated = res?.result?.updated ?? 0;
                 alert(`Atualizado todos os ui.json: ${updated} itens`);
                 // Força recarregar o ui.json e redesenhar
-                const ui = await ApiService.getUiJson(customer, namespace, app);
+                const ui = await ApiService.getUiJson(namespace, app);
                 if (ui) {
                   const pagesRecord = ui.pages ?? {};
                   const componentsRecord = ui.components ?? {};

@@ -232,7 +232,6 @@ export function ChatPanel({ isVisible, currentContext = {}, width }) {
         projectPath: currentContext.projectPath || '/apps/quero/flow',
         currentFile: currentContext.currentFile || 'documentation.json',
         area: currentContext.area || 'documentação',
-        customer: currentContext.customer,
         namespace: currentContext.namespace,
         app: currentContext.app,
       };

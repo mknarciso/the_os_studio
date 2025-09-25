@@ -1,17 +1,21 @@
 import { createTool } from '@mastra/core/tools';
+import type { Tool } from '@mastra/core/tools';
 import { z } from 'zod';
 
-export const screenshotsTool = createTool({
+const inputSchema = z.object({
+  pages: z.array(z.object({ url: z.string() })),
+  runDir: z.string().optional().describe('Diretório da run para salvar imagens (opcional)'),
+});
+const outputSchema = z.object({
+  screenshots: z.array(z.object({ url: z.string(), viewport: z.string(), fullpage: z.string() })),
+  saved: z.array(z.object({ url: z.string(), viewportPath: z.string().optional(), fullpagePath: z.string().optional() })).optional(),
+});
+
+export const screenshotsTool: Tool<typeof inputSchema, typeof outputSchema> = createTool({
   id: 'screenshots-tool',
   description: 'Tira screenshots com Puppeteer (viewport e fullpage) e salva em /runs/{run_id}/screenshots',
-  inputSchema: z.object({
-    pages: z.array(z.object({ url: z.string() })),
-    runDir: z.string().optional().describe('Diretório da run para salvar imagens (opcional)'),
-  }),
-  outputSchema: z.object({
-    screenshots: z.array(z.object({ url: z.string(), viewport: z.string(), fullpage: z.string() })),
-    saved: z.array(z.object({ url: z.string(), viewportPath: z.string().optional(), fullpagePath: z.string().optional() })).optional(),
-  }),
+  inputSchema,
+  outputSchema,
   execute: async ({ context }) => {
     const path = await import('node:path');
     const fs = await import('node:fs/promises');

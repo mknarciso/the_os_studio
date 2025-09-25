@@ -75,10 +75,9 @@ export class AiService implements OnModuleInit {
       const agent = mastra.getAgent('staffDeveloperAgent');
       if (!agent) throw new Error('staffDeveloperAgent not found');
       console.log('🤖 [AiService] Agent acquired, calling generate');
-      const runtimeContext = new RuntimeContext<{ customer?: string; namespace?: string; app?: string }>();
+      const runtimeContext = new RuntimeContext<{ namespace?: string; app?: string }>();
       try {
         const ctx = input.context || {} as any;
-        let customer = ctx.customer as string | undefined;
         let namespace = ctx.namespace as string | undefined;
         let app = ctx.app as string | undefined;
         const projectPath = ctx.projectPath as string | undefined;
@@ -94,7 +93,6 @@ export class AiService implements OnModuleInit {
             app = app || parts[1];
           }
         }
-        if (customer) runtimeContext.set('customer', customer);
         if (namespace) runtimeContext.set('namespace', namespace);
         if (app) runtimeContext.set('app', app);
       } catch {}

@@ -135,7 +135,7 @@ function guessReferencesForEntity(entityName, entityDef, allEntityNames) {
   return refFields;
 }
 
-export default function DataSchemaGraph({ customer, namespace, app }) {
+export default function DataSchemaGraph({ namespace, app }) {
   const [rawEntities, setRawEntities] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -154,7 +154,7 @@ export default function DataSchemaGraph({ customer, namespace, app }) {
       try {
         setLoading(true);
         setError(null);
-        const res = await ApiService.getFileContent(customer, namespace, app, 'docs/entities.json');
+        const res = await ApiService.getFileContent(namespace, app, 'docs/entities.json');
         const obj = JSON.parse(res.content);
         if (isMounted) setRawEntities(obj);
       } catch (e) {
@@ -165,7 +165,7 @@ export default function DataSchemaGraph({ customer, namespace, app }) {
     };
     load();
     return () => { isMounted = false; };
-  }, [customer, namespace, app]);
+  }, [namespace, app]);
 
   // Build graph
   const { parsedNodes, parsedEdges } = useMemo(() => {
@@ -246,7 +246,7 @@ export default function DataSchemaGraph({ customer, namespace, app }) {
       const updated = { ...(rawEntities || {}) };
       updated[parsed.name || selectedEntityName] = parsed;
       const content = JSON.stringify(updated, null, 2);
-      await ApiService.saveFile(customer, namespace, app, 'docs/entities.json', content);
+      await ApiService.saveFile(namespace, app, 'docs/entities.json', content);
       setRawEntities(updated);
       closeModal();
     } catch (e) {
@@ -254,7 +254,7 @@ export default function DataSchemaGraph({ customer, namespace, app }) {
     } finally {
       setSaving(false);
     }
-  }, [editorValue, rawEntities, customer, namespace, app, selectedEntityName, closeModal]);
+  }, [editorValue, rawEntities, namespace, app, selectedEntityName, closeModal]);
 
   if (loading) {
     return (

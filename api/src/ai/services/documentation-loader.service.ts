@@ -86,22 +86,12 @@ export class DocumentationLoaderService {
     
     // Padrões de caminhos possíveis para documentação
     const possiblePaths = [
-      // Padrão correto para quero/flow
-      path.join(workspaceRoot, 'preview_customers', 'quero', context.projectPath, 'documentation.json'),
-      path.join(workspaceRoot, 'dist_customers', 'quero', context.projectPath, 'documentation.json'),
-      
-      // Padrões para estrutura de customers (mais comuns)
-      path.join(workspaceRoot, 'preview_customers', context.projectPath, 'documentation.json'),
-      path.join(workspaceRoot, 'dist_customers', context.projectPath, 'documentation.json'),
-      
-      // Padrões para apps específicos (baseado no exemplo fornecido)
-      path.join(workspaceRoot, 'preview_customers', context.projectPath, 'apps', 'quero', 'flow', 'documentation.json'),
-      path.join(workspaceRoot, 'dist_customers', context.projectPath, 'apps', 'quero', 'flow', 'documentation.json'),
-      
-      // Padrões baseados no projectPath direto
+      // Novo padrão: workspace root é /
       path.join(workspaceRoot, context.projectPath, 'documentation.json'),
       path.join(workspaceRoot, context.projectPath, 'docs', 'documentation.json'),
       path.join(workspaceRoot, context.projectPath, 'data', 'documentation.json'),
+      // Padrão específico apps
+      path.join(workspaceRoot, 'apps', 'quero', 'flow', 'documentation.json'),
     ];
 
     console.log('🔍 [DocumentationLoader] Searching for documentation in projectPath:', context.projectPath);

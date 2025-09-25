@@ -9,7 +9,6 @@
  * Inputs (JSON)
  * - area: 'pages' | 'data' | 'automations' | 'documentation' (currently only 'pages' resolves paths)
  * - projectPath?: string — '/apps/{namespace}/{app}' (recommended)
- * - customer?: string, namespace?: string, app?: string (optional if projectPath provided)
  * - location: 'pages' | 'components' | 'navigation'
  * - relativePath: string — filename only
  * - find: string — text to search (literal match)
@@ -18,7 +17,7 @@
  *
  * Outputs (JSON)
  * - fullPath: absolute file path
- * - osPath: path relative to customer root
+ * - osPath: path relative to root
  * - appPath: path relative to app root
  * - changed: boolean
  * - occurrences: number
@@ -45,7 +44,7 @@ import { toolBus } from '../../../utils/event-bus';
 
 export const filePatchTool = createTool({
   id: 'file-patch-tool',
-  description: 'Aplica edição textual em um arquivo. Informe apenas osPath/find/replace; customer/namespace/app vêm do runtimeContext.',
+  description: 'Aplica edição textual em um arquivo. Informe apenas osPath/find/replace; namespace/app vêm do runtimeContext.',
   inputSchema: z.object({
     osPath: z.string(),
     find: z.string().min(1),
@@ -93,7 +92,6 @@ export const filePatchTool = createTool({
       console.log('[filePatchTool] a1Keys:', a1 && typeof a1 === 'object' ? Object.keys(a1) : typeof a1);
       console.log('[filePatchTool] ctx.hasInput:', Boolean((a0 as any)?.input), 'ctx.hasArgs:', Boolean((a0 as any)?.args));
       console.log('[filePatchTool] inputPreview:', {
-        customer: (input as any)?.customer,
         osPath: (input as any)?.osPath,
         find: (input as any)?.find,
         all: (input as any)?.all,
@@ -103,11 +101,8 @@ export const filePatchTool = createTool({
     if (!input || typeof input !== 'object') {
       throw new Error('Parâmetros inválidos: objeto de entrada não recebido');
     }
-    const customer = ((a0 as any)?.runtimeContext?.get?.('customer') as string) || ((a1 as any)?.runtimeContext?.get?.('customer') as string);
-    if (!customer) {
-      throw new Error('file-patch-tool: runtimeContext.customer ausente');
-    }
-    const target = await toFullPathFromOsPath(customer, input.osPath);
+
+    const target = await toFullPathFromOsPath(input.osPath);
     const ext = path.extname(target).toLowerCase();
     if (!ext) throw new Error('Extensão ausente no caminho informado');
     assertAllowedExtension(`file${ext}`);

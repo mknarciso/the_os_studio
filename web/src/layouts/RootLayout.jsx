@@ -11,22 +11,21 @@ export function RootLayout() {
 
   const [showChat, setShowChat] = useState(true);
 
-  const { customer = 'quero', namespace = 'quero', app = 'flow', area = 'documentation' } = params;
+  const { namespace = 'quero', app = 'flow', area = 'documentation' } = params;
 
-  const handleContextChange = (newCustomer, newNamespace, newApp) => {
-    const nextPath = `/${newCustomer}/${newNamespace}/${newApp}/${area}`;
+  const handleContextChange = (newNamespace, newApp) => {
+    const nextPath = `/${newNamespace}/${newApp}/${area}`;
     if (location.pathname !== nextPath) navigate(nextPath, { replace: false });
   };
 
   const handleSectionChange = (nextArea, path) => {
-    const nextPath = `/${customer}/${namespace}/${app}/${nextArea}`;
+    const nextPath = `/${namespace}/${app}/${nextArea}`;
     if (location.pathname !== nextPath) navigate(nextPath, { replace: false, state: { sectionPath: path } });
   };
 
   return (
     <div className="app">
       <TopBar
-        customer={customer}
         namespace={namespace}
         app={app}
         onContextChange={handleContextChange}
@@ -37,11 +36,10 @@ export function RootLayout() {
         <NavigationSidebar
           activeSection={area}
           onSectionChange={handleSectionChange}
-          customer={customer}
           namespace={namespace}
           app={app}
         />
-        <Outlet context={{ customer, namespace, app, area, showChat }} />
+        <Outlet context={{ namespace, app, area, showChat }} />
       </div>
     </div>
   );

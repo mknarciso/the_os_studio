@@ -5,14 +5,16 @@ import { mastra } from '../mastra';
 
 @Injectable()
 export class BrandingService {
-  private readonly customersBase = path.join(__dirname, '..', '..', '..', '..', 'customers');
+  // Workspace root is /
+  private readonly workspaceRoot = path.join(__dirname, '..', '..');
 
-  private getCustomerBrandingDir(customer: string) {
-    return path.join(this.customersBase, customer, 'branding');
+  private getWorkspaceBrandingDir() {
+    // workspace param kept for API signature, but workspaceRoot already points to the workspace root
+    return path.join(this.workspaceRoot, 'branding');
   }
 
-  async readBrandingFile(customer: string, relPath: string) {
-    const base = this.getCustomerBrandingDir(customer);
+  async readBrandingFile(relPath: string) {
+    const base = this.getWorkspaceBrandingDir();
     const target = path.resolve(base, relPath);
     const resolvedBase = path.resolve(base);
     if (!target.startsWith(resolvedBase)) {
@@ -26,16 +28,8 @@ export class BrandingService {
     }
   }
 
-  async runBrandingWorkflow({ customer, domain }: { customer: string; domain: string }) {
-    const targetDir = this.getCustomerBrandingDir(customer);
-    
-    // Debug: Log environment and telemetry info
-    console.log('=== NestJS Branding Service Debug ===');
-    console.log('MASTRA_STORAGE_URL:', process.env.MASTRA_STORAGE_URL);
-    console.log('NODE_ENV:', process.env.NODE_ENV);
-    console.log('Mastra telemetry:', mastra.getTelemetry());
-    console.log('Mastra storage:', mastra.getStorage());
-    console.log('=====================================');
+  async runBrandingWorkflow({ domain }: { domain: string }) {
+    const targetDir = this.getWorkspaceBrandingDir();
     
     try {
       const wf = mastra.getWorkflow('brandDesignerWorkflow');
@@ -44,7 +38,7 @@ export class BrandingService {
 
       const guidelinePath = path.join(targetDir, 'guideline.yaml');
       const cssPath = path.join(targetDir, 'index.css');
-      return { success: true, customer, paths: { guidelinePath, cssPath } };
+      return { success: true, paths: { guidelinePath, cssPath } };
     } catch (e) {
       throw new InternalServerErrorException('Failed to run branding workflow');
     }

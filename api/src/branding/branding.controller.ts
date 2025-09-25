@@ -6,20 +6,19 @@ import { mastra } from '../mastra';
 export class BrandingController {
   constructor(private readonly brandingService: BrandingService) {}
 
-  @Get('content/:customer')
+  @Get('content/')
   async getContent(
-    @Param('customer') customer: string,
     @Query('path') relPath: string,
   ) {
     if (!relPath) throw new BadRequestException('Missing path');
-    return this.brandingService.readBrandingFile(customer, relPath);
+    return this.brandingService.readBrandingFile(relPath);
   }
 
   @Post('run')
   async runBranding(@Body() body: any) {
-    const { customer, domain } = body || {};
-    if (!customer || !domain) throw new BadRequestException('Missing customer or domain');
-    return this.brandingService.runBrandingWorkflow({ customer, domain });
+    const { domain } = body || {};
+    if (!domain) throw new BadRequestException('Missing domain');
+    return this.brandingService.runBrandingWorkflow({ domain });
   }
 
   @Post('test')

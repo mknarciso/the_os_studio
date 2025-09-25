@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { ApiService } from '../services/api';
 
-export function BrandingView({ customer, activeTab, onTabChange, refreshKey }) {
+export function BrandingView({ activeTab, onTabChange, refreshKey }) {
   const [guideline, setGuideline] = useState('');
   const [css, setCss] = useState('');
   const [loading, setLoading] = useState(false);
@@ -10,15 +10,15 @@ export function BrandingView({ customer, activeTab, onTabChange, refreshKey }) {
 
   useEffect(() => {
     loadFiles();
-  }, [customer, refreshKey]);
+  }, [refreshKey]);
 
   const loadFiles = async () => {
     setLoading(true);
     setError(null);
     try {
       const [g, c] = await Promise.all([
-        ApiService.getBrandingFile(customer, 'guideline.yaml').catch(() => ({ content: '' })),
-        ApiService.getBrandingFile(customer, 'index.css').catch(() => ({ content: '' })),
+        ApiService.getBrandingFile('guideline.yaml').catch(() => ({ content: '' })),
+        ApiService.getBrandingFile('index.css').catch(() => ({ content: '' })),
       ]);
       setGuideline(g?.content || '');
       setCss(c?.content || '');

@@ -9,16 +9,20 @@
  * - Output: { cwd, workspaceRoot }
  */
 import { createTool } from '@mastra/core/tools';
+import type { Tool } from '@mastra/core/tools';
 import { z } from 'zod';
 
-export const debugPwdTool = createTool({
+const inputSchema = z.object({}).optional();
+const outputSchema = z.object({
+  cwd: z.string(),
+  workspaceRoot: z.string(),
+});
+
+export const debugPwdTool: Tool<typeof inputSchema, typeof outputSchema> = createTool({
   id: 'debug-pwd-tool',
   description: 'Retorna o diretório de trabalho atual (pwd) e o workspaceRoot resolvido.',
-  inputSchema: z.object({}).optional(),
-  outputSchema: z.object({
-    cwd: z.string(),
-    workspaceRoot: z.string(),
-  }),
+  inputSchema,
+  outputSchema,
   execute: async () => {
     const cwd = process.cwd();
     let workspaceRoot = '';

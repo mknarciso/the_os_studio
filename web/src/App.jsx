@@ -14,9 +14,9 @@ function App() {
         path: '/',
         element: <RootOutlet />,
         children: [
-          { index: true, element: <Navigate to="/quero/quero/flow/documentation" replace /> },
+          { index: true, element: <Navigate to="quero/flow/documentation" replace /> },
           {
-            path: ':customer/:namespace/:app',
+            path: ':namespace/:app',
             element: <RootLayout />,
             children: [
               { index: true, element: <Navigate to="documentation" replace /> },

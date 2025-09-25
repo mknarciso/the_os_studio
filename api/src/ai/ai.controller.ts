@@ -99,17 +99,16 @@ export class AiController {
       // Inject a compact context prelude so tools can read projectPath/namespace/app
       const contextPrelude = {
         role: 'system' as const,
-        content: `CTX { "projectPath": ${JSON.stringify(data.context?.projectPath || '')}, "customer": ${JSON.stringify(data.context?.customer || '')}, "namespace": ${JSON.stringify(data.context?.namespace || '')}, "app": ${JSON.stringify(data.context?.app || '')} }`
+        content: `CTX { "projectPath": ${JSON.stringify(data.context?.projectPath || '')}, "namespace": ${JSON.stringify(data.context?.namespace || '')}, "app": ${JSON.stringify(data.context?.app || '')} }`
       };
       history.unshift(contextPrelude as any);
       history.push({ role: 'user', content: data.message });
       console.log('🧠 [AiController.stream] Built history', { messages: history.length });
 
-      // Prepare runtime context for tools (customer/namespace/app)
-      const runtimeContext = new RuntimeContext<{ customer?: string; namespace?: string; app?: string }>();
+      // Prepare runtime context for tools (namespace/app)
+      const runtimeContext = new RuntimeContext<{ namespace?: string; app?: string }>();
       try {
         const ctx = data.context || {} as any;
-        let customer = ctx.customer as string | undefined;
         let namespace = ctx.namespace as string | undefined;
         let app = ctx.app as string | undefined;
         const projectPath = ctx.projectPath as string | undefined;
@@ -125,7 +124,6 @@ export class AiController {
             app = app || parts[1];
           }
         }
-        if (customer) runtimeContext.set('customer', customer);
         if (namespace) runtimeContext.set('namespace', namespace);
         if (app) runtimeContext.set('app', app);
       } catch {}
@@ -335,7 +333,6 @@ export class AiController {
   async runUi(@Body() body: unknown) {
     const UiRunInputSchema = z.object({
       action: z.enum(['init_db', 'update_from_file', 'list_all', 'update_all']),
-      customer: z.string().min(1),
       namespace: z.string().min(1),
       app: z.string().min(1),
       filePath: z.string().optional(),

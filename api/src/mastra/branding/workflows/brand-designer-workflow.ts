@@ -602,8 +602,8 @@ const generateCss = createStep({
   },
 });
 
-const persistToCustomerDir = createStep({
-  id: 'persist-to-customer-dir',
+const persistToWorkspaceDir = createStep({
+  id: 'persist-to-workspace-dir',
   description: 'Copia todos os arquivos do run para o diretório do cliente (branding/)',
   inputSchema: z
     .object({
@@ -664,7 +664,7 @@ const brandDesignerWorkflow = createWorkflow({ id: 'brand-designer-workflow', in
   .then(useTools)
   .then(generateGuideline)
   .then(generateCss)
-  .then(persistToCustomerDir);
+  .then(persistToWorkspaceDir);
 
 brandDesignerWorkflow.commit();
 

@@ -8,7 +8,7 @@
 # Dist
 package-lock.json
 api/.mastra/
-api/data/mastra/
+api/data/mastra/*
 
 # Cache
 .DS_Store

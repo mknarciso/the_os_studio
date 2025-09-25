@@ -8,9 +8,9 @@ export class ListAllNode {
   constructor(private readonly fsTool: FileSystemToolService) {}
 
   async execute(state: typeof UiState.State) {
-    const { customer, namespace, app } = state.input;
-    this.logger.log(`list_all: scanning ${customer}/${namespace}/${app}`);
-    const res = await this.fsTool.listAllUiFiles({ customer, namespace, app });
+    const { namespace, app } = state.input;
+    this.logger.log(`list_all: scanning ${namespace}/${app}`);
+    const res = await this.fsTool.listAllUiFiles({ namespace, app });
     this.logger.log(`list_all: found pages=${res.pages.length} components=${res.components.length}`);
     return { result: res };
   }

@@ -1,4 +1,5 @@
 import { createTool } from '@mastra/core/tools';
+import type { Tool } from '@mastra/core/tools';
 import { z } from 'zod';
 
 const isLikelyLogo = (urlOrAlt: string): boolean => /logo|brandmark|wordmark|logotype|mark/i.test(urlOrAlt);
@@ -13,18 +14,21 @@ const candidatePaths = [
   '/logo.svg','/logo-light.svg','/logo-dark.svg','/assets/logo.svg','/images/logo.svg','/img/logo.svg','/static/logo.svg',
 ];
 
-export const brandLogoTool = createTool({
+const inputSchema = z.object({
+  origin: z.string(),
+  homepageHtml: z.string(),
+  runDir: z.string().describe('Diretório absoluto da run (cria subpasta logo/)'),
+});
+const outputSchema = z.object({
+  logoUrls: z.array(z.string()),
+  saved: z.array(z.string()).optional(),
+});
+
+export const brandLogoTool: Tool<typeof inputSchema, typeof outputSchema> = createTool({
   id: 'brand-logo-tool',
   description: 'Busca logos (png/svg) preferindo fundo transparente; salva em /runs/{run_id}/logo',
-  inputSchema: z.object({
-    origin: z.string(),
-    homepageHtml: z.string(),
-    runDir: z.string().describe('Diretório absoluto da run (cria subpasta logo/)'),
-  }),
-  outputSchema: z.object({
-    logoUrls: z.array(z.string()),
-    saved: z.array(z.string()).optional(),
-  }),
+  inputSchema,
+  outputSchema,
   execute: async ({ context }) => {
     const { origin, homepageHtml, runDir } = context;
     const urls = new Set<string>();

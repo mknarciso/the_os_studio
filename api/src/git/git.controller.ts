@@ -7,12 +7,11 @@ export class GitController {
 
   @Get('unsaved-diffs')
   async getUnsavedDiffs(
-    @Query('customer') customer: string,
     @Query('namespace') namespace: string,
     @Query('app') app: string,
     @Query('verbose') verbose?: string,
   ) {
-    return this.gitService.getUnsavedDiffs({ customer, namespace, app, verbose: verbose === 'true' });
+    return this.gitService.getUnsavedDiffs({ namespace, app, verbose: verbose === 'true' });
   }
 }
 

@@ -1,14 +1,13 @@
 const API_BASE_URL = 'http://localhost:3001';
 
 export class ApiService {
-  static async saveFile(customer, namespace, app, relativePath, content) {
+  static async saveFile(namespace, app, relativePath, content) {
     const response = await fetch(`${API_BASE_URL}/files/save`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        customer,
         namespace,
         app,
         relativePath,
@@ -24,9 +23,8 @@ export class ApiService {
     return response.json();
   }
 
-  static async getUnsavedDiffs(customer, namespace, app, verbose = false) {
+  static async getUnsavedDiffs(namespace, app, verbose = false) {
     const url = new URL(`${API_BASE_URL}/git/unsaved-diffs`);
-    url.searchParams.set('customer', customer);
     url.searchParams.set('namespace', namespace);
     url.searchParams.set('app', app);
     if (verbose) url.searchParams.set('verbose', 'true');
@@ -38,8 +36,8 @@ export class ApiService {
     return response.json();
   }
 
-  static async getFileTree(customer, namespace, app, subPath = '') {
-    const url = new URL(`${API_BASE_URL}/files/tree/${customer}/${namespace}/${app}`);
+  static async getFileTree(namespace, app, subPath = '') {
+    const url = new URL(`${API_BASE_URL}/files/tree/${namespace}/${app}`);
     if (subPath) {
       url.searchParams.set('subPath', subPath);
     }
@@ -54,9 +52,9 @@ export class ApiService {
     return response.json();
   }
 
-  static async getFileContent(customer, namespace, app, relativePath) {
+  static async getFileContent(namespace, app, relativePath) {
     const encodedPath = encodeURIComponent(relativePath);
-    const response = await fetch(`${API_BASE_URL}/files/content/${customer}/${namespace}/${app}?path=${encodedPath}`);
+    const response = await fetch(`${API_BASE_URL}/files/content/${namespace}/${app}?path=${encodedPath}`);
     
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Failed to load file content' }));
@@ -66,11 +64,11 @@ export class ApiService {
     return response.json();
   }
 
-  static async getUiJson(customer, namespace, app) {
-    // IMPORTANT: server already resolves base path using customer/namespace/app params
+  static async getUiJson(namespace, app) {
+    // IMPORTANT: server already resolves base path using namespace/app params
     // so the query 'path' must be RELATIVE to the app root
     const encodedPath = encodeURIComponent('docs/ui.json');
-    const response = await fetch(`${API_BASE_URL}/files/content/${customer}/${namespace}/${app}?path=${encodedPath}`);
+    const response = await fetch(`${API_BASE_URL}/files/content/${namespace}/${app}?path=${encodedPath}`);
     if (!response.ok) {
       return null;
     }
@@ -83,10 +81,10 @@ export class ApiService {
     }
   }
 
-  static async pathExists(customer, namespace, app, relativePath) {
+  static async pathExists(namespace, app, relativePath) {
     try {
       const encodedPath = encodeURIComponent(relativePath);
-      const response = await fetch(`${API_BASE_URL}/files/exists/${customer}/${namespace}/${app}?path=${encodedPath}`);
+      const response = await fetch(`${API_BASE_URL}/files/exists/${namespace}/${app}?path=${encodedPath}`);
       if (!response.ok) return false;
       const data = await response.json();
       return Boolean(data?.exists);
@@ -96,9 +94,9 @@ export class ApiService {
   }
 
   // Branding API
-  static async getBrandingFile(customer, relativePath) {
+  static async getBrandingFile(relativePath) {
     const encoded = encodeURIComponent(relativePath);
-    const response = await fetch(`${API_BASE_URL}/branding/content/${customer}?path=${encoded}`);
+    const response = await fetch(`${API_BASE_URL}/branding/content?path=${encoded}`);
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Failed to load branding file' }));
       throw new Error(error.message || 'Failed to load branding file');
@@ -106,11 +104,11 @@ export class ApiService {
     return response.json();
   }
 
-  static async runBranding(customer, domain) {
+  static async runBranding(domain) {
     const response = await fetch(`${API_BASE_URL}/branding/run`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ customer, domain }),
+      body: JSON.stringify({ domain }),
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Failed to run branding workflow' }));
@@ -133,9 +131,8 @@ export class ApiService {
   }
 
   // Documentation API methods
-  static async getDocumentation(customer, namespace, app) {
+  static async getDocumentation(namespace, app) {
     const url = new URL(`${API_BASE_URL}/documentation`);
-    url.searchParams.set('customer', customer);
     url.searchParams.set('namespace', namespace);
     url.searchParams.set('app', app);
     const response = await fetch(url);
@@ -148,9 +145,8 @@ export class ApiService {
     return response.json();
   }
 
-  static async updateApp(customer, namespace, app, data) {
+  static async updateApp(namespace, app, data) {
     const url = new URL(`${API_BASE_URL}/documentation/app`);
-    url.searchParams.set('customer', customer);
     url.searchParams.set('namespace', namespace);
     url.searchParams.set('app', app);
     const response = await fetch(url, {
@@ -170,9 +166,8 @@ export class ApiService {
   }
 
   // Generic entity methods - works with any entity type
-  static async getEntities(customer, namespace, app, entityType) {
+  static async getEntities(namespace, app, entityType) {
     const url = new URL(`${API_BASE_URL}/documentation/${entityType}`);
-    url.searchParams.set('customer', customer);
     url.searchParams.set('namespace', namespace);
     url.searchParams.set('app', app);
     const response = await fetch(url);
@@ -185,9 +180,8 @@ export class ApiService {
     return response.json();
   }
 
-  static async createEntity(customer, namespace, app, entityType, data) {
+  static async createEntity(namespace, app, entityType, data) {
     const url = new URL(`${API_BASE_URL}/documentation/${entityType}`);
-    url.searchParams.set('customer', customer);
     url.searchParams.set('namespace', namespace);
     url.searchParams.set('app', app);
     const response = await fetch(url, {
@@ -206,9 +200,8 @@ export class ApiService {
     return response.json();
   }
 
-  static async updateEntity(customer, namespace, app, entityType, slug, data) {
+  static async updateEntity(namespace, app, entityType, slug, data) {
     const url = new URL(`${API_BASE_URL}/documentation/${entityType}/${slug}`);
-    url.searchParams.set('customer', customer);
     url.searchParams.set('namespace', namespace);
     url.searchParams.set('app', app);
     const response = await fetch(url, {
@@ -227,9 +220,8 @@ export class ApiService {
     return response.json();
   }
 
-  static async deleteEntity(customer, namespace, app, entityType, slug) {
+  static async deleteEntity(namespace, app, entityType, slug) {
     const url = new URL(`${API_BASE_URL}/documentation/${entityType}/${slug}`);
-    url.searchParams.set('customer', customer);
     url.searchParams.set('namespace', namespace);
     url.searchParams.set('app', app);
     const response = await fetch(url, {
@@ -382,11 +374,11 @@ export class ApiService {
   }
 
   // UI Graph
-  static async runUiGraph({ action, customer, namespace, app, filePath }) {
+  static async runUiGraph({ action, namespace, app, filePath }) {
     const response = await fetch(`${API_BASE_URL}/ai/ui/run`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action, customer, namespace, app, filePath }),
+      body: JSON.stringify({ action, namespace, app, filePath }),
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Failed to run UI graph' }));

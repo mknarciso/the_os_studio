@@ -10,8 +10,7 @@ import DataSchemaGraph from './DataSchemaGraph';
 import { ReactFlowProvider } from 'reactflow';
 import { BrandingView } from './BrandingView';
 
-export function MainContent({ 
-  customer, 
+export function MainContent({
   namespace, 
   app, 
   activeSection, 
@@ -140,7 +139,7 @@ export function MainContent({
       setRunning(true);
       setRunError(null);
       const { ApiService } = await import('../services/api');
-      await ApiService.runBranding(customer, domainInput);
+      await ApiService.runBranding(domainInput);
       setShowDomainModal(false);
       setBrandingRefresh((x) => x + 1);
     } catch (e) {
@@ -153,8 +152,7 @@ export function MainContent({
   const renderMainPanel = () => {
     if (activeSection === 'documentation') {
       return (
-        <DocumentationView 
-          customer={customer} 
+        <DocumentationView
           namespace={namespace} 
           app={app}
           activeTab={activeTab}
@@ -166,7 +164,6 @@ export function MainContent({
     if (activeSection === 'branding') {
       return (
         <BrandingView
-          customer={customer}
           activeTab={activeTab}
           onTabChange={setActiveTab}
           refreshKey={brandingRefresh}
@@ -177,7 +174,6 @@ export function MainContent({
     if (activeTab === 'code') {
       return (
         <MonacoEditor
-          customer={customer}
           namespace={namespace}
           app={app}
           selectedFile={selectedFile}
@@ -200,7 +196,7 @@ export function MainContent({
       return (
         <div className="graph-panel" style={{ position: 'relative', width: '100%', height: '100%', minHeight: '500px' }}>
           <ReactFlowProvider>
-            <PagesGraph customer={customer} namespace={namespace} app={app} />
+            <PagesGraph namespace={namespace} app={app} />
           </ReactFlowProvider>
         </div>
       );
@@ -210,7 +206,7 @@ export function MainContent({
       return (
         <div className="graph-panel" style={{ position: 'relative', width: '100%', height: '100%', minHeight: '500px' }}>
           <ReactFlowProvider>
-            <DataSchemaGraph customer={customer} namespace={namespace} app={app} />
+            <DataSchemaGraph namespace={namespace} app={app} />
           </ReactFlowProvider>
         </div>
       );
@@ -321,7 +317,6 @@ export function MainContent({
     <div className="content-area">
       {shouldShowFileTree() && (
         <FileTree
-          customer={customer}
           namespace={namespace}
           app={app}
           selectedFile={selectedFile}
@@ -400,7 +395,6 @@ export function MainContent({
                 projectPath: `/apps/${namespace}/${app}`,
                 currentFile: EditorSessionStore.getSelectedFileForArea(activeSection) || '',
                 area: activeSection,
-                customer,
                 namespace,
                 app,
               }}

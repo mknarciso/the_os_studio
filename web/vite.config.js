@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@zazos/schemas": path.resolve(__dirname, "../../shared/schemas/dist/index.js")
+      "@zazos/schemas": path.resolve(__dirname, "../../../../shared/schemas/dist/index.js")
     },
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json']
   },

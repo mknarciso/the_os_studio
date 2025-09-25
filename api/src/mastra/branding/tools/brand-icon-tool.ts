@@ -1,4 +1,5 @@
 import { createTool } from '@mastra/core/tools';
+import type { Tool } from '@mastra/core/tools';
 import { z } from 'zod';
 
 type FaviconGrabberResponse = {
@@ -10,19 +11,22 @@ const ensureAbsolute = (origin: string, href: string): string => {
   return `${origin}${href.startsWith('/') ? '' : '/'}${href}`;
 };
 
-export const brandIconTool = createTool({
+const inputSchema = z.object({
+  domain: z.string().describe('Domínio, ex: contasimples.com'),
+  homepageHtml: z.string().optional(),
+  origin: z.string().optional(),
+  runDir: z.string().optional().describe('Diretório absoluto da run para salvar logo/icon')
+});
+const outputSchema = z.object({
+  icons: z.array(z.string()),
+  savedIconPath: z.string().optional(),
+});
+
+export const brandIconTool: Tool<typeof inputSchema, typeof outputSchema> = createTool({
   id: 'brand-icon-tool',
   description: 'Busca ícones (favicon/apple-touch) do domínio e salva ícone padrão',
-  inputSchema: z.object({
-    domain: z.string().describe('Domínio, ex: contasimples.com'),
-    homepageHtml: z.string().optional(),
-    origin: z.string().optional(),
-    runDir: z.string().optional().describe('Diretório absoluto da run para salvar logo/icon')
-  }),
-  outputSchema: z.object({
-    icons: z.array(z.string()),
-    savedIconPath: z.string().optional(),
-  }),
+  inputSchema,
+  outputSchema,
   execute: async ({ context }) => {
     const domain = context.domain.replace(/^https?:\/\//, '').replace(/^www\./, '');
     const origin = context.origin || `https://${domain}`;

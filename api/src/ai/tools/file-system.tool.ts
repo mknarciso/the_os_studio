@@ -22,11 +22,9 @@ export class FileSystemToolService {
     await fs.writeFile(filePath, defaultContent, 'utf8');
   }
 
-  getUiJsonPath(customer: string, namespace: string, app: string): string {
+  getUiJsonPath(namespace: string, app: string): string {
     return path.join(
       this.getWorkspaceRoot(),
-      'preview_customers',
-      customer,
       'apps',
       namespace,
       app,
@@ -186,9 +184,9 @@ export class FileSystemToolService {
     return items;
   }
 
-  async resolveRoots(customer: string, namespace: string, app: string): Promise<{ appRoot: string; flowRoot: string }>{
-    const base1 = path.join(this.getWorkspaceRoot(), 'preview_customers', customer, 'apps', namespace, app);
-    const base2 = path.join(this.getWorkspaceRoot(), 'preview_customers', customer, 'apps', namespace);
+  async resolveRoots(namespace: string, app: string): Promise<{ appRoot: string; flowRoot: string }>{
+    const base1 = path.join(this.getWorkspaceRoot(), 'apps', namespace, app);
+    const base2 = path.join(this.getWorkspaceRoot(), 'apps', namespace);
     const appRoot = (await this.pathExists(base1)) ? base1 : base2;
     const directPages = await this.pathExists(path.join(appRoot, 'pages'));
     const directComponents = await this.pathExists(path.join(appRoot, 'components'));
@@ -199,10 +197,10 @@ export class FileSystemToolService {
     return { appRoot, flowRoot };
   }
 
-  async listAllUiFiles(params: { customer: string; namespace: string; app: string }): Promise<{ pages: string[]; components: string[]; appRoot: string; flowRoot: string }>
+  async listAllUiFiles(params: { namespace: string; app: string }): Promise<{ pages: string[]; components: string[]; appRoot: string; flowRoot: string }>
   {
-    const { customer, namespace, app } = params;
-    const { appRoot, flowRoot } = await this.resolveRoots(customer, namespace, app);
+    const { namespace, app } = params;
+    const { appRoot, flowRoot } = await this.resolveRoots( namespace, app);
     const pagesDir = path.join(flowRoot, 'pages');
     const compsDir = path.join(flowRoot, 'components');
     const exts = new Set(['.tsx', '.ts', '.jsx', '.js']);
@@ -229,10 +227,10 @@ export class FileSystemToolService {
     return { pages: pageFiles, components: compFiles, appRoot, flowRoot };
   }
 
-  async buildUiEntryFromFile(params: { filePath: string; customer: string; namespace: string; app: string }): Promise<{ kind: 'page' | 'component'; key: string; value: UiPage | UiComponent }>
+  async buildUiEntryFromFile(params: { filePath: string; namespace: string; app: string }): Promise<{ kind: 'page' | 'component'; key: string; value: UiPage | UiComponent }>
   {
-    const { filePath, customer, namespace, app } = params;
-    const { flowRoot } = await this.resolveRoots(customer, namespace, app);
+    const { filePath, namespace, app } = params;
+    const { flowRoot } = await this.resolveRoots(namespace, app);
     const rel = path.relative(flowRoot, filePath).replace(/\\/g, '/');
     const isPage = rel.startsWith('pages/') || rel.includes('/pages/');
     const kind: 'page' | 'component' = isPage ? 'page' : 'component';

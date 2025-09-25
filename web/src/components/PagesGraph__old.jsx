@@ -139,7 +139,7 @@ function findAllDirsByName(tree, targetName) {
   return result;
 }
 
-export function PagesGraph({ customer, namespace, app }) {
+export function PagesGraph({ namespace, app }) {
   const svgRef = useRef(null);
   const [size, setSize] = useState({ width: 800, height: 600 });
   const [pageNames, setPageNames] = useState([]);
@@ -171,7 +171,7 @@ export function PagesGraph({ customer, namespace, app }) {
 
   useEffect(() => {
     async function loadFromUi() {
-      const ui = await ApiService.getUiJson(customer, namespace, app);
+      const ui = await ApiService.getUiJson(namespace, app);
       if (!ui || (!ui.pages && !ui.components)) {
         setPageNames([]);
         setComponentNames([]);
@@ -248,7 +248,7 @@ export function PagesGraph({ customer, namespace, app }) {
       setEdgesFromUi(deduped);
     }
     loadFromUi();
-  }, [customer, namespace, app]);
+  }, [namespace, app]);
 
   // Removed legacy file-content loading; we rely solely on ui.json
 
@@ -606,12 +606,12 @@ export function PagesGraph({ customer, namespace, app }) {
         <button
           onClick={async () => {
             try {
-              const res = await ApiService.runUiGraph({ action: 'update_all', customer, namespace, app });
+              const res = await ApiService.runUiGraph({ action: 'update_all', namespace, app });
               // Feedback e recarrega ui.json
               const updated = res?.result?.updated ?? 0;
               alert(`Atualizado ui.json: ${updated} itens`);
               // Força recarregar o ui.json e redesenhar
-              const ui = await ApiService.getUiJson(customer, namespace, app);
+              const ui = await ApiService.getUiJson(namespace, app);
               if (!ui || (!ui.pages && !ui.components)) {
                 setPageNames([]);
                 setComponentNames([]);

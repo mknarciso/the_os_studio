@@ -1,4 +1,5 @@
 import { createTool } from '@mastra/core/tools';
+import type { Tool } from '@mastra/core/tools';
 import { z } from 'zod';
 
 type CssTokenExtraction = {
@@ -70,20 +71,23 @@ const parseTokens = (cssList: string[]): CssTokenExtraction => {
   };
 };
 
-export const cssTokensTool = createTool({
+const inputSchema = z.object({
+  origin: z.string(),
+  html: z.string(),
+});
+const outputSchema = z.object({
+  tokens: z.object({
+    colors: z.array(z.object({ value: z.string(), name: z.string().optional() })),
+    fonts: z.array(z.object({ family: z.string(), weight: z.string().optional(), source: z.string().optional() })),
+    variables: z.record(z.string(), z.string()),
+  }),
+});
+
+export const cssTokensTool: Tool<typeof inputSchema, typeof outputSchema> = createTool({
   id: 'css-tokens-tool',
   description: 'Extrai tokens básicos (variáveis CSS, cores, fontes) do HTML+CSS da página',
-  inputSchema: z.object({
-    origin: z.string(),
-    html: z.string(),
-  }),
-  outputSchema: z.object({
-    tokens: z.object({
-      colors: z.array(z.object({ value: z.string(), name: z.string().optional() })),
-      fonts: z.array(z.object({ family: z.string(), weight: z.string().optional(), source: z.string().optional() })),
-      variables: z.record(z.string(), z.string()),
-    }),
-  }),
+  inputSchema,
+  outputSchema,
   execute: async ({ context }) => {
     const refs = extractCss(context.html);
     const stylesheets = await fetchStylesheets(context.origin, refs);

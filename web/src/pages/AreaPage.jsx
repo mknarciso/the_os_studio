@@ -5,7 +5,7 @@ import { MainContent } from '../components/MainContent';
 const VALID_AREAS = new Set(['branding', 'documentation', 'data', 'scopes', 'pages', 'automations', 'public-pages', 'agents']);
 
 export function AreaPage() {
-  const { customer, namespace, app, area, showChat } = useOutletContext();
+  const { namespace, app, area, showChat } = useOutletContext();
   const location = useLocation();
   const [sectionPath, setSectionPath] = useState('docs.md');
 
@@ -21,7 +21,6 @@ export function AreaPage() {
 
   return (
     <MainContent
-      customer={customer}
       namespace={namespace}
       app={app}
       activeSection={area}

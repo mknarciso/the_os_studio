@@ -6,7 +6,7 @@ import { editorStore } from '../stores/EditorStore';
 import { FileTree } from './FileTree';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 
-export function MonacoEditor({ customer, namespace, app, selectedFile, onFileSelect, basePath = '', showHeader = true }) {
+export function MonacoEditor({ namespace, app, selectedFile, onFileSelect, basePath = '', showHeader = true }) {
   const [content, setContent] = useState('');
   const [originalContent, setOriginalContent] = useState('');
   const [loading, setLoading] = useState(false);
@@ -29,7 +29,7 @@ export function MonacoEditor({ customer, namespace, app, selectedFile, onFileSel
       setOriginalContent('');
       setError(null);
     }
-  }, [selectedFile, customer, namespace, app]);
+  }, [selectedFile, namespace, app]);
 
   const loadFileContent = async () => {
     if (!selectedFile) return;
@@ -38,7 +38,7 @@ export function MonacoEditor({ customer, namespace, app, selectedFile, onFileSel
       setLoading(true);
       setError(null);
       
-      const data = await ApiService.getFileContent(customer, namespace, app, selectedFile);
+      const data = await ApiService.getFileContent(namespace, app, selectedFile);
       setContent(data.content);
       setOriginalContent(data.content);
     } catch (err) {
@@ -58,7 +58,7 @@ export function MonacoEditor({ customer, namespace, app, selectedFile, onFileSel
       setError(null);
 
       // Simulate webcontainer.fs.writeFile behavior
-      const data = await ApiService.saveFile(customer, namespace, app, selectedFile, content);
+      const data = await ApiService.saveFile(namespace, app, selectedFile, content);
       
       // Update the original content to reflect saved state
       setOriginalContent(content);
@@ -269,7 +269,6 @@ export function MonacoEditor({ customer, namespace, app, selectedFile, onFileSel
               >
                 <div style={{ height: '100%', background: '#1e1e1e', overflow: 'auto' }}>
                   <FileTree
-                    customer={customer}
                     namespace={namespace}
                     app={app}
                     selectedFile={selectedFile}

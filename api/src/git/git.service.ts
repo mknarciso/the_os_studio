@@ -3,7 +3,7 @@ import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import simpleGit from 'simple-git';
 import { spawn } from 'node:child_process';
-import { resolveOsAppPaths, getCustomerRoot, toOsPathFromFull, toAppPathFromFull } from '../mastra/tools/file-system/fs-utils';
+import { resolveOsAppPaths, getWorkspaceRoot, toOsPathFromFull, toAppPathFromFull } from '../mastra/tools/file-system/fs-utils';
 import { createRequire } from 'node:module';
 
 type DiffHunk = {
@@ -20,9 +20,9 @@ type FileDiff = {
 
 @Injectable()
 export class GitService {
-  async getUnsavedDiffs(params: { customer: string; namespace: string; app: string; verbose?: boolean }) {
-    const { customer, namespace, app } = params;
-    const { web, backend, supabase, customerRoot, appPath } = await resolveOsAppPaths(customer, namespace, app);
+  async getUnsavedDiffs(params: { namespace: string; app: string; verbose?: boolean }) {
+    const { namespace, app } = params;
+    const { web, backend, supabase, workspaceRoot, appPath } = await resolveOsAppPaths(namespace, app);
 
     const diffs: FileDiff[] = [];
 
@@ -86,7 +86,7 @@ export class GitService {
         const bAbs = bPathRaw && bPathRaw !== '/dev/null' ? bPathRaw : '';
         const chosenAbs = !isNew ? aAbs : bAbs;
         if (!chosenAbs) continue;
-        const osPath = await toOsPathFromFull(chosenAbs, customer);
+        const osPath = await toOsPathFromFull(chosenAbs);
 
         const added: number[] = [];
         const removed: number[] = [];
@@ -124,27 +124,27 @@ export class GitService {
         child.on('close', () => resolve(stdout || ''));
       });
     };
-    // Use existing check_diffs.js under customer root for robust mapping
+    // Use existing check_diffs.js under workspace root for robust mapping
     const req = createRequire(__filename);
-    const scriptPath = path.resolve(customerRoot, 'check_diffs.js');
+    const scriptPath = path.resolve(workspaceRoot, 'check_diffs.js');
     let originalCwd = process.cwd();
     try {
-      process.chdir(customerRoot);
+      process.chdir(workspaceRoot);
     } catch {}
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const mod = req(scriptPath);
       const rawDiffs = await mod.checkAppDiffs(namespace, app);
       for (const d of rawDiffs || []) {
-        const destFull = d.dest ? path.resolve(customerRoot, d.dest) : '';
-        const sourceFull = d.source ? path.resolve(customerRoot, d.source) : '';
+        const destFull = d.dest ? path.resolve(workspaceRoot, d.dest) : '';
+        const sourceFull = d.source ? path.resolve(workspaceRoot, d.source) : '';
         const destExists = d.destExists === true && destFull ? await fs.stat(destFull).then(() => true).catch(() => false) : false;
         const sourceExists = d.sourceExists === true && sourceFull ? await fs.stat(sourceFull).then(() => true).catch(() => false) : false;
 
         const chosenFull = destExists ? destFull : (sourceExists ? sourceFull : (destFull || sourceFull));
         if (!chosenFull) continue;
-        const osPath = (await toOsPathFromFull(chosenFull, customer)).replace(/\\/g, '/');
-        const appPathMaybe = (sourceExists ? await toAppPathFromFull(sourceFull, customer) : (destExists ? await toAppPathFromFull(sourceFull || destFull, customer).catch(() => '') : '')) as string | '';
+        const osPath = (await toOsPathFromFull(chosenFull)).replace(/\\/g, '/');
+        const appPathMaybe = (sourceExists ? await toAppPathFromFull(sourceFull) : (destExists ? await toAppPathFromFull(sourceFull || destFull).catch(() => '') : '')) as string | '';
 
         const status: FileDiff['status'] = d.status === 'different' ? 'modified' : (d.status === 'dest_missing' ? 'created' : 'deleted');
 
@@ -186,7 +186,7 @@ export class GitService {
     }
 
     return {
-      context: { customer, namespace, app },
+      context: { namespace, app },
       count: diffs.length,
       diffs,
     };

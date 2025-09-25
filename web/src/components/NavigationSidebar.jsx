@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { FileText, Database, Shield, Layout, Zap, Globe, Bot, Paintbrush, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export function NavigationSidebar({ activeSection, onSectionChange, customer, namespace, app }) {
+export function NavigationSidebar({ activeSection, onSectionChange, namespace, app }) {
   const [collapsed, setCollapsed] = useState(false);
   const menuItems = [
     {

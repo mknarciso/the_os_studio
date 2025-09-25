@@ -38,12 +38,7 @@ export class DocumentationToolNode {
         } else {
           const workspaceRoot = path.join(process.cwd(), '..', '..');
           const rawProjectPath = (state.context?.projectPath || '').replace(/^\/+/, '');
-          if (rawProjectPath.includes('preview_customers/')) {
-            targetPath = path.join(workspaceRoot, rawProjectPath, 'documentation.json');
-          } else {
-            const defaultCustomer = 'quero';
-            targetPath = path.join(workspaceRoot, 'preview_customers', defaultCustomer, rawProjectPath, 'documentation.json');
-          }
+          targetPath = path.join(workspaceRoot, rawProjectPath, 'documentation.json');
         }
 
         if (targetPath) {

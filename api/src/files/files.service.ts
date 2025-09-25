@@ -5,10 +5,10 @@ import * as path from 'path';
 
 @Injectable()
 export class FilesService {
-  private readonly basePreviewPath = path.join(__dirname, '..', '..', '..', '..', 'preview_customers');
+  private readonly basePath = path.join(process.cwd(), '..', '..');
 
   async saveFile(saveFileDto: SaveFileDto) {
-    const { customer, namespace, app, relativePath, content } = saveFileDto;
+    const { namespace, app, relativePath, content } = saveFileDto;
 
     // Decide target root based on file type and relative path (gradual migration per APP_EDITOR_RULES)
     const normalizedRelPath = relativePath.replace(/^\.\/+/, '');
@@ -20,8 +20,7 @@ export class FilesService {
       // Write into supabase migrations (filter is handled on read-tree; here we allow editing any selected file)
       const fileName = normalizedRelPath.replace(/^data\/migrations\//, '');
       fullPath = path.join(
-        this.basePreviewPath,
-        customer,
+        this.basePath,
         'supabase',
         'migrations',
         fileName,
@@ -30,8 +29,7 @@ export class FilesService {
       // Write into supabase seed/{namespace}/{app}
       const rest = normalizedRelPath.replace(/^data\/seed\//, '');
       fullPath = path.join(
-        this.basePreviewPath,
-        customer,
+        this.basePath,
         'supabase',
         'seed',
         namespace,
@@ -41,8 +39,7 @@ export class FilesService {
     } else if (normalizedRelPath.startsWith('automations/app/')) {
       const rest = normalizedRelPath.replace(/^automations\/app\//, '');
       fullPath = path.join(
-        this.basePreviewPath,
-        customer,
+        this.basePath,
         'supabase',
         'functions',
         `app-${namespace}-${app}`,
@@ -51,8 +48,7 @@ export class FilesService {
     } else if (normalizedRelPath.startsWith('automations/router-on-user-events/')) {
       const rest = normalizedRelPath.replace(/^automations\/router-on-user-events\//, '');
       fullPath = path.join(
-        this.basePreviewPath,
-        customer,
+        this.basePath,
         'supabase',
         'functions',
         'router-on-user-events',
@@ -65,8 +61,7 @@ export class FilesService {
         // Save Pages to web/src/pages/{namespace}/{app}/...
         const rest = rel.replace(/^pages\//, '');
         fullPath = path.join(
-          this.basePreviewPath,
-          customer,
+          this.basePath,
           'web',
           'src',
           'pages',
@@ -78,8 +73,7 @@ export class FilesService {
         // Save Components to web/src/components/{namespace}/{app}/...
         const rest = rel.replace(/^components\//, '');
         fullPath = path.join(
-          this.basePreviewPath,
-          customer,
+          this.basePath,
           'web',
           'src',
           'components',
@@ -91,8 +85,7 @@ export class FilesService {
         // Save Navigation under web/src/navigation (flat). Expected file: `${namespace}_${app}.js`
         const rest = rel.replace(/^navigation\//, '');
         fullPath = path.join(
-          this.basePreviewPath,
-          customer,
+          this.basePath,
           'web',
           'src',
           'navigation',
@@ -102,8 +95,7 @@ export class FilesService {
         // Save Controllers to backend/src/api-web/{namespace}/{app}/...
         const rest = rel.replace(/^controllers\//, '');
         fullPath = path.join(
-          this.basePreviewPath,
-          customer,
+          this.basePath,
           'backend',
           'src',
           'api-web',
@@ -114,8 +106,7 @@ export class FilesService {
       } else {
         // Default: keep under apps for other code for now
         fullPath = path.join(
-          this.basePreviewPath,
-          customer,
+          this.basePath,
           'apps',
           namespace,
           app,
@@ -125,8 +116,7 @@ export class FilesService {
     } else {
       // Non-code files (docs, json, etc) stay under /apps
       fullPath = path.join(
-        this.basePreviewPath,
-        customer,
+        this.basePath,
         'apps',
         namespace,
         app,
@@ -136,7 +126,7 @@ export class FilesService {
 
     // Validate that the path is within the allowed directory
     const resolvedPath = path.resolve(fullPath);
-    const resolvedBasePath = path.resolve(this.basePreviewPath);
+    const resolvedBasePath = path.resolve(this.basePath);
     
     if (!resolvedPath.startsWith(resolvedBasePath)) {
       throw new BadRequestException('Invalid file path - outside allowed directory');
@@ -164,19 +154,19 @@ export class FilesService {
     }
   }
 
-  async getFileTree(customer: string, namespace: string, app: string, subPath?: string) {
-    const appsBase = path.join(this.basePreviewPath, customer, 'apps', namespace, app);
-    const pagesBase = path.join(this.basePreviewPath, customer, 'web', 'src', 'pages', namespace, app);
-    const componentsBase = path.join(this.basePreviewPath, customer, 'web', 'src', 'components', namespace, app);
+  async getFileTree(namespace: string, app: string, subPath?: string) {
+    const appsBase = path.join(this.basePath, 'apps', namespace, app);
+    const pagesBase = path.join(this.basePath, 'web', 'src', 'pages', namespace, app);
+    const componentsBase = path.join(this.basePath, 'web', 'src', 'components', namespace, app);
     // Navigation is a flat directory with files like `${namespace}_${app}.js`
-    const navigationDir = path.join(this.basePreviewPath, customer, 'web', 'src', 'navigation');
+    const navigationDir = path.join(this.basePath, 'web', 'src', 'navigation');
     // Supabase roots
-    const supabaseBase = path.join(this.basePreviewPath, customer, 'supabase');
+    const supabaseBase = path.join(this.basePath, 'supabase');
     const migrationsDir = path.join(supabaseBase, 'migrations');
     const seedBaseDir = path.join(supabaseBase, 'seed', namespace, app);
     const functionsAppDir = path.join(supabaseBase, 'functions', `app-${namespace}-${app}`);
     const functionsRouterUserDir = path.join(supabaseBase, 'functions', 'router-on-user-events', `app-${namespace}-${app}`);
-    const controllersBase = path.join(this.basePreviewPath, customer, 'backend', 'src', 'api-web', namespace, app);
+    const controllersBase = path.join(this.basePath, 'backend', 'src', 'api-web', namespace, app);
 
     const rel = (subPath || '').replace(/^\.\/+/, '').replace(/\\/g, '/');
 
@@ -362,7 +352,7 @@ export class FilesService {
     }
   }
 
-  async getFileContent(customer: string, namespace: string, app: string, relativePath: string) {
+  async getFileContent(namespace: string, app: string, relativePath: string) {
     const normalizedRelPath = relativePath.replace(/^\.\/+/, '').replace(/\\/g, '/');
     const ext = path.extname(normalizedRelPath).toLowerCase();
     const isCodeFile = ['.js', '.jsx', '.ts', '.tsx'].includes(ext);
@@ -371,36 +361,36 @@ export class FilesService {
     const candidates: string[] = [];
     if (normalizedRelPath.startsWith('data/migrations/')) {
       const fileName = normalizedRelPath.replace(/^data\/migrations\//, '');
-      candidates.push(path.join(this.basePreviewPath, customer, 'supabase', 'migrations', fileName));
+      candidates.push(path.join(this.basePath, 'supabase', 'migrations', fileName));
     } else if (normalizedRelPath.startsWith('data/seed/')) {
       const rest = normalizedRelPath.replace(/^data\/seed\//, '');
-      candidates.push(path.join(this.basePreviewPath, customer, 'supabase', 'seed', namespace, app, rest));
+      candidates.push(path.join(this.basePath, 'supabase', 'seed', namespace, app, rest));
     } else if (normalizedRelPath.startsWith('automations/app/')) {
       const rest = normalizedRelPath.replace(/^automations\/app\//, '');
-      candidates.push(path.join(this.basePreviewPath, customer, 'supabase', 'functions', `app-${namespace}-${app}`, rest));
+      candidates.push(path.join(this.basePath, 'supabase', 'functions', `app-${namespace}-${app}`, rest));
     } else if (normalizedRelPath.startsWith('automations/router-on-user-events/')) {
       const rest = normalizedRelPath.replace(/^automations\/router-on-user-events\//, '');
-      candidates.push(path.join(this.basePreviewPath, customer, 'supabase', 'functions', 'router-on-user-events', `app-${namespace}-${app}`, rest));
+      candidates.push(path.join(this.basePath, 'supabase', 'functions', 'router-on-user-events', `app-${namespace}-${app}`, rest));
     } else if (isCodeFile) {
       if (normalizedRelPath.startsWith('pages/')) {
         const rest = normalizedRelPath.replace(/^pages\//, '');
-        candidates.push(path.join(this.basePreviewPath, customer, 'web', 'src', 'pages', namespace, app, rest));
+        candidates.push(path.join(this.basePath, 'web', 'src', 'pages', namespace, app, rest));
       } else if (normalizedRelPath.startsWith('components/')) {
         const rest = normalizedRelPath.replace(/^components\//, '');
-        candidates.push(path.join(this.basePreviewPath, customer, 'web', 'src', 'components', namespace, app, rest));
+        candidates.push(path.join(this.basePath, 'web', 'src', 'components', namespace, app, rest));
       } else if (normalizedRelPath.startsWith('navigation/')) {
         const rest = normalizedRelPath.replace(/^navigation\//, '');
-        candidates.push(path.join(this.basePreviewPath, customer, 'web', 'src', 'navigation', rest));
+        candidates.push(path.join(this.basePath, 'web', 'src', 'navigation', rest));
       } else if (normalizedRelPath.startsWith('controllers/')) {
         const rest = normalizedRelPath.replace(/^controllers\//, '');
-        candidates.push(path.join(this.basePreviewPath, customer, 'backend', 'src', 'api-web', namespace, app, rest));
+        candidates.push(path.join(this.basePath, 'backend', 'src', 'api-web', namespace, app, rest));
       }
     }
     // Fallback to original /apps location
-    candidates.push(path.join(this.basePreviewPath, customer, 'apps', namespace, app, normalizedRelPath));
+    candidates.push(path.join(this.basePath, 'apps', namespace, app, normalizedRelPath));
 
     // Validate all candidate paths are within base and return first that exists
-    const resolvedBasePath = path.resolve(this.basePreviewPath);
+    const resolvedBasePath = path.resolve(this.basePath);
     for (const candidate of candidates) {
       const resolvedPath = path.resolve(candidate);
       if (!resolvedPath.startsWith(resolvedBasePath)) {

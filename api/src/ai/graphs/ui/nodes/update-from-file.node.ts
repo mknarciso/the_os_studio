@@ -17,11 +17,11 @@ export class UpdateFromFileNode {
   ) {}
 
   async execute(state: typeof UiState.State) {
-    const { customer, namespace, app, filePath } = state.input;
+    const { namespace, app, filePath } = state.input;
     if (!filePath) throw new Error('filePath is required for update_from_file');
     this.logger.log(`Executing: update from file ${filePath}`);
 
-    const { flowRoot } = await this.fsTool.resolveRoots(customer, namespace, app);
+    const { flowRoot } = await this.fsTool.resolveRoots(namespace, app);
     const fileContent = await fs.readFile(filePath, 'utf-8');
     const relPath = path.relative(flowRoot, filePath).replace(/\\/g, '/');
     const kind = (relPath.startsWith('pages/') || relPath.includes('/pages/')) ? 'page' : 'component';
@@ -38,7 +38,7 @@ export class UpdateFromFileNode {
     };
 
     // 3. Apply patch
-    const targetJson = this.fsTool.getUiJsonPath(customer, namespace, app);
+    const targetJson = this.fsTool.getUiJsonPath(namespace, app);
     const patchPath = `/${kind}s/${name}`;
     const patchOp: Operation = { op: 'add', path: patchPath, value: finalObject };
     

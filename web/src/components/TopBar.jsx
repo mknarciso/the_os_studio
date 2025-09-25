@@ -2,34 +2,22 @@ import { useState, useEffect } from 'react';
 import { WandSparkles } from 'lucide-react';
 import { ApiService } from '../services/api';
 
-export function TopBar({ customer, namespace, app, onContextChange, showChat, onToggleChat }) {
-  const [customers] = useState(['quero', 'brendi', 'start', 'omelete']); // Mock data
-  const [namespaceApps] = useState({
-    'omelete': ['omelete/beneficios'],
-    'quero': ['quero/flow', 'core/agents', 'core/configs'],
-    'brendi': ['brendi/main'],
-    'start': ['start/base']
-  });
+export function TopBar({ namespace, app, onContextChange, showChat, onToggleChat }) {
+  const [namespaceApps] = useState(['quero/flow', 'core/agents', 'core/configs']);
   const [diffs, setDiffs] = useState({ count: 0, diffs: [] });
   const [showDiffsModal, setShowDiffsModal] = useState(false);
   const [selectedDiff, setSelectedDiff] = useState(null);
 
-  const handleCustomerChange = (newCustomer) => {
-    const firstNamespaceApp = namespaceApps[newCustomer]?.[0] || '';
-    const [newNamespace, newApp] = firstNamespaceApp.split('/');
-    onContextChange(newCustomer, newNamespace, newApp);
-  };
-
   const handleNamespaceAppChange = (namespaceApp) => {
     const [newNamespace, newApp] = namespaceApp.split('/');
-    onContextChange(customer, newNamespace, newApp);
+    onContextChange( newNamespace, newApp);
   };
 
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
       try {
-        const res = await ApiService.getUnsavedDiffs(customer, namespace, app);
+        const res = await ApiService.getUnsavedDiffs(namespace, app);
         if (!cancelled) {
           setDiffs(res || { count: 0, diffs: [] });
           setSelectedDiff((res?.diffs && res.diffs[0]) || null);
@@ -50,7 +38,7 @@ export function TopBar({ customer, namespace, app, onContextChange, showChat, on
       window.removeEventListener('studio:file-saved', onRefresh);
       window.removeEventListener('studio:ai-tools-finished', onRefresh);
     };
-  }, [customer, namespace, app]);
+  }, [namespace, app]);
 
   const currentNamespaceApp = `${namespace}/${app}`;
 
@@ -64,26 +52,13 @@ export function TopBar({ customer, namespace, app, onContextChange, showChat, on
         </div>
         
         <div className="top-bar-section">
-          <span className="top-bar-label">Customer:</span>
-          <select 
-            className="top-bar-select" 
-            value={customer} 
-            onChange={(e) => handleCustomerChange(e.target.value)}
-          >
-            {customers.map(c => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        </div>
-        
-        <div className="top-bar-section">
           <span className="top-bar-label">App:</span>
           <select 
             className="top-bar-select" 
             value={currentNamespaceApp} 
             onChange={(e) => handleNamespaceAppChange(e.target.value)}
           >
-            {namespaceApps[customer]?.map(na => (
+            {namespaceApps?.map(na => (
               <option key={na} value={na}>{na}</option>
             ))}
           </select>
@@ -95,7 +70,7 @@ export function TopBar({ customer, namespace, app, onContextChange, showChat, on
           className="save-button"
           onClick={async () => {
             try {
-              const res = await ApiService.getUnsavedDiffs(customer, namespace, app);
+              const res = await ApiService.getUnsavedDiffs(namespace, app);
               setDiffs(res || { count: 0, diffs: [] });
               setSelectedDiff((res?.diffs && res.diffs[0]) || null);
             } catch {

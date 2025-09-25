@@ -38,24 +38,21 @@ export class DocumentationService implements OnModuleInit {
 
   async onModuleInit() {}
 
-  private resolveSelection(selection?: { customer?: string; namespace?: string; app?: string }) {
-    const customer = selection?.customer || process.env.DEFAULT_CUSTOMER || 'quero';
+  private resolveSelection(selection?: { namespace?: string; app?: string }) {
     const namespace = selection?.namespace || process.env.DEFAULT_NAMESPACE || 'quero';
     const app = selection?.app || process.env.DEFAULT_APP || 'flow';
-    return { customer, namespace, app };
+    return { namespace, app };
   }
 
-  private async getDb(selection?: { customer?: string; namespace?: string; app?: string }) {
-    const { customer, namespace, app } = this.resolveSelection(selection);
-    const key = `${customer}/${namespace}/${app}`;
+  private async getDb(selection?: { namespace?: string; app?: string }) {
+    const { namespace, app } = this.resolveSelection(selection);
+    const key = `${namespace}/${app}`;
     if (this.dbMap.has(key)) {
       return this.dbMap.get(key);
     }
 
     const filePath = join(
       this.workspacePath,
-      'preview_customers',
-      customer,
       'apps',
       namespace,
       app,
@@ -87,23 +84,23 @@ export class DocumentationService implements OnModuleInit {
     return db;
   }
 
-  private async ensureInitialized(selection?: { customer?: string; namespace?: string; app?: string }) {
+  private async ensureInitialized(selection?: { namespace?: string; app?: string }) {
     return this.getDb(selection);
   }
 
-  async getAll(selection?: { customer?: string; namespace?: string; app?: string }): Promise<DocumentationDb> {
+  async getAll(selection?: { namespace?: string; app?: string }): Promise<DocumentationDb> {
     const db = await this.getDb(selection);
     await db.read();
     return db.data;
   }
 
-  async getApp(selection?: { customer?: string; namespace?: string; app?: string }) {
+  async getApp(selection?: { namespace?: string; app?: string }) {
     const db = await this.getDb(selection);
     await db.read();
     return db.data.app;
   }
 
-  async updateApp(selection: { customer?: string; namespace?: string; app?: string }, data: any) {
+  async updateApp(selection: { namespace?: string; app?: string }, data: any) {
     const db = await this.getDb(selection);
     const config = ENTITY_CONFIGS.app;
     const validated = config.schema.parse(data);
@@ -115,13 +112,13 @@ export class DocumentationService implements OnModuleInit {
   }
 
   // Generic methods for all entities
-  async getEntity(selection: { customer?: string; namespace?: string; app?: string }, entityType: string) {
+  async getEntity(selection: { namespace?: string; app?: string }, entityType: string) {
     const db = await this.getDb(selection);
     await db.read();
     return db.data[entityType];
   }
 
-  async createEntity(selection: { customer?: string; namespace?: string; app?: string }, entityType: string, data: any) {
+  async createEntity(selection: { namespace?: string; app?: string }, entityType: string, data: any) {
     const config = ENTITY_CONFIGS[entityType];
     if (!config) {
       throw new BadRequestException(`Unknown entity type: ${entityType}`);
@@ -141,7 +138,7 @@ export class DocumentationService implements OnModuleInit {
     return validated;
   }
 
-  async updateEntity(selection: { customer?: string; namespace?: string; app?: string }, entityType: string, slug: string, data: any) {
+  async updateEntity(selection: { namespace?: string; app?: string }, entityType: string, slug: string, data: any) {
     const config = ENTITY_CONFIGS[entityType];
     if (!config) {
       throw new BadRequestException(`Unknown entity type: ${entityType}`);
@@ -166,7 +163,7 @@ export class DocumentationService implements OnModuleInit {
     return validated;
   }
 
-  async deleteEntity(selection: { customer?: string; namespace?: string; app?: string }, entityType: string, slug: string) {
+  async deleteEntity(selection: { namespace?: string; app?: string }, entityType: string, slug: string) {
     const config = ENTITY_CONFIGS[entityType];
     if (!config) {
       throw new BadRequestException(`Unknown entity type: ${entityType}`);

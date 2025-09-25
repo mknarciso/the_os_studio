@@ -1,4 +1,5 @@
 import { createTool } from '@mastra/core/tools';
+import type { Tool } from '@mastra/core/tools';
 import { z } from 'zod';
 
 type AnyRecord = Record<string, any>;
@@ -12,16 +13,19 @@ const toCssVars = (obj: AnyRecord): string => {
   return lines.join('\n');
 };
 
-export const tweakcnCssTool = createTool({
+const inputSchema = z.object({
+  runDir: z.string(),
+  guidelinePath: z.string().optional(),
+});
+const outputSchema = z.object({
+  cssPath: z.string(),
+});
+
+export const tweakcnCssTool: Tool<typeof inputSchema, typeof outputSchema> = createTool({
   id: 'tweakcn-css-tool',
   description: 'Gera index.css (tema tweakcn) a partir do guideline.yaml salvo no run',
-  inputSchema: z.object({
-    runDir: z.string(),
-    guidelinePath: z.string().optional(),
-  }),
-  outputSchema: z.object({
-    cssPath: z.string(),
-  }),
+  inputSchema,
+  outputSchema,
   execute: async ({ context }) => {
     const path = await import('node:path');
     const fs = await import('node:fs/promises');

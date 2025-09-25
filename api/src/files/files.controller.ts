@@ -11,23 +11,21 @@ export class FilesController {
     return this.filesService.saveFile(saveFileDto);
   }
 
-  @Get('tree/:customer/:namespace/:app')
+  @Get('tree/:namespace/:app')
   async getFileTree(
-    @Param('customer') customer: string,
     @Param('namespace') namespace: string,
     @Param('app') app: string,
     @Query('subPath') subPath?: string,
   ) {
-    return this.filesService.getFileTree(customer, namespace, app, subPath);
+    return this.filesService.getFileTree(namespace, app, subPath);
   }
 
-  @Get('content/:customer/:namespace/:app')
+  @Get('content/:namespace/:app')
   async getFileContent(
-    @Param('customer') customer: string,
     @Param('namespace') namespace: string,
     @Param('app') app: string,
     @Query('path') relativePath: string,
   ) {
-    return this.filesService.getFileContent(customer, namespace, app, relativePath);
+    return this.filesService.getFileContent(namespace, app, relativePath);
   }
 }

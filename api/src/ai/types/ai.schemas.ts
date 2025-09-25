@@ -22,7 +22,6 @@ export const MessageSchema = z.object({
     projectPath: z.string().optional(),
     currentFile: z.string().optional(),
     area: z.string().optional(),
-    customer: z.string().optional(),
     namespace: z.string().optional(),
     app: z.string().optional()
   }).optional()
@@ -51,7 +50,6 @@ export const SendMessageInputSchema = z.object({
     projectPath: z.string().optional(),
     currentFile: z.string().optional(),
     area: z.string().optional(),
-    customer: z.string().optional(),
     namespace: z.string().optional(),
     app: z.string().optional()
   }).optional()

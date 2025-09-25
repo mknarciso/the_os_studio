@@ -7,7 +7,7 @@ import { DocumentationReader } from './DocumentationReader';
 import { MonacoEditor } from './MonacoEditor';
 import { ApiService } from '../services/api';
 
-export function DocumentationView({ customer, namespace, app, activeTab, onTabChange }) {
+export function DocumentationView({ namespace, app, activeTab, onTabChange }) {
   const [selectedEntity, setSelectedEntity] = useState({ type: 'app', slug: 'app' });
   const [documentation, setDocumentation] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,14 +15,14 @@ export function DocumentationView({ customer, namespace, app, activeTab, onTabCh
 
   useEffect(() => {
     loadDocumentation();
-  }, [customer, namespace, app]);
+  }, [namespace, app]);
 
   const loadDocumentation = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const data = await ApiService.getDocumentation(customer, namespace, app);
+      const data = await ApiService.getDocumentation(namespace, app);
       setDocumentation(data);
     } catch (err) {
       setError(err.message);
@@ -50,7 +50,7 @@ export function DocumentationView({ customer, namespace, app, activeTab, onTabCh
 
   const renderContent = () => {
     if (activeTab === 'explorar') {
-      return <DocumentationExplorer customer={customer} namespace={namespace} app={app} />;
+      return <DocumentationExplorer namespace={namespace} app={app} />;
     }
 
     if (activeTab === 'read') {
@@ -62,7 +62,6 @@ export function DocumentationView({ customer, namespace, app, activeTab, onTabCh
     if (activeTab === 'edit') {
       return (
         <DocumentationEditor
-          customer={customer}
           namespace={namespace}
           app={app}
           selectedEntity={selectedEntity}
@@ -75,7 +74,6 @@ export function DocumentationView({ customer, namespace, app, activeTab, onTabCh
     if (activeTab === 'code') {
       return (
         <MonacoEditor
-          customer={customer}
           namespace={namespace}
           app={app}
           selectedFile="documentation.json"

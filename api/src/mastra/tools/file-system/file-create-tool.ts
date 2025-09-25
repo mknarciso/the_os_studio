@@ -3,14 +3,13 @@
  *
  * What it does
  * - Creates a new .js/.jsx/.ts file under an allowed OS location for the app
- * - Resolves OS path from identifiers (customer/namespace/app) or `projectPath`
+ * - Resolves OS path from identifiers (namespace/app) or `projectPath`
  * - Will not overwrite by default (set `overwrite: true` to replace)
  * - Emits an internal event `tool:used` when executed
  *
  * Inputs (JSON)
  * - area: 'pages' | 'data' | 'automations' | 'documentation' (currently only 'pages' resolves paths)
  * - projectPath?: string — '/apps/{namespace}/{app}' (recommended)
- * - customer?: string, namespace?: string, app?: string (optional if projectPath provided)
  * - location: 'pages' | 'components' | 'navigation'
  * - relativePath: string — filename only
  * - content: string — file contents
@@ -18,7 +17,7 @@
  *
  * Outputs (JSON)
  * - fullPath: absolute file path
- * - osPath: path relative to customer root
+ * - osPath: path relative to root
  * - appPath: path relative to app root
  * - created: boolean
  *
@@ -43,7 +42,7 @@ import { toolBus } from '../../../utils/event-bus';
 
 export const fileCreateTool = createTool({
   id: 'file-create-tool',
-  description: 'Cria um novo arquivo no OS. Informe apenas osPath (destino) e conteúdo; customer/namespace/app vêm do runtimeContext.',
+  description: 'Cria um novo arquivo no OS. Informe apenas osPath (destino) e conteúdo; namespace/app vêm do runtimeContext.',
   inputSchema: z.object({
     osPath: z.string().describe('Destino dentro do OS (ex.: web/src/pages/ns/app/File.jsx)'),
     content: z.string().default(''),
@@ -65,7 +64,6 @@ export const fileCreateTool = createTool({
       console.log('[fileCreateTool] a1Keys:', a1 && typeof a1 === 'object' ? Object.keys(a1) : typeof a1);
       console.log('[fileCreateTool] ctx.hasInput:', Boolean((a0 as any)?.input), 'ctx.hasArgs:', Boolean((a0 as any)?.args));
       console.log('[fileCreateTool] inputPreview:', {
-        customer: (input as any)?.customer,
         osPath: (input as any)?.osPath,
         appPath: (input as any)?.appPath,
         fullPath: (input as any)?.fullPath,
@@ -77,11 +75,7 @@ export const fileCreateTool = createTool({
       throw new Error('Parâmetros inválidos: objeto de entrada não recebido');
     }
 
-    const customer = ((a0 as any)?.runtimeContext?.get?.('customer') as string) || ((a1 as any)?.runtimeContext?.get?.('customer') as string);
-    if (!customer) {
-      throw new Error('file-create-tool: runtimeContext.customer ausente');
-    }
-    const target = await toFullPathFromOsPath(customer, input.osPath);
+    const target = await toFullPathFromOsPath(input.osPath);
     const ext = path.extname(target).toLowerCase();
     if (!ext) throw new Error('Extensão ausente no caminho informado');
     assertAllowedExtension(`file${ext}`);
