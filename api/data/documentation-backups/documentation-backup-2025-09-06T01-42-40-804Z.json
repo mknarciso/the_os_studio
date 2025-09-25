@@ -1,0 +1,251 @@
+{
+  "flows": {
+    "processo_compras": {
+      "slug": "processo_compras",
+      "title": "Processo de Compras",
+      "description": "Fluxo completo do processo de compras, desde a solicitação até o pagamento",
+      "flow_states": [
+        {
+          "slug": "draft",
+          "name": "Rascunho",
+          "order": 0,
+          "is_initial": true,
+          "is_final": false
+        },
+        {
+          "slug": "review",
+          "name": "Em Revisão",
+          "order": 1,
+          "is_initial": false,
+          "is_final": false
+        },
+        {
+          "slug": "approved",
+          "name": "Aprovado",
+          "order": 2,
+          "is_initial": false,
+          "is_final": false
+        },
+        {
+          "slug": "paid",
+          "name": "Pago",
+          "order": 3,
+          "is_initial": false,
+          "is_final": true
+        }
+      ]
+    }
+  },
+  "flow_states": {
+    "draft": {
+      "slug": "draft",
+      "name": "Rascunho",
+      "order": 0,
+      "is_initial": true,
+      "is_final": false,
+      "allowed_transitions": [
+        "review"
+      ],
+      "required_roles": [
+        "solicitante"
+      ]
+    },
+    "review": {
+      "slug": "review",
+      "name": "Em Revisão",
+      "order": 1,
+      "is_initial": false,
+      "is_final": false,
+      "allowed_transitions": [
+        "approved",
+        "draft"
+      ],
+      "required_roles": [
+        "aprovador"
+      ]
+    },
+    "approved": {
+      "slug": "approved",
+      "name": "Aprovado",
+      "order": 2,
+      "is_initial": false,
+      "is_final": false,
+      "allowed_transitions": [
+        "paid"
+      ],
+      "required_roles": [
+        "financeiro"
+      ]
+    },
+    "paid": {
+      "slug": "paid",
+      "name": "Pago",
+      "order": 3,
+      "is_initial": false,
+      "is_final": true,
+      "required_roles": [
+        "sistema_pagamento"
+      ]
+    }
+  },
+  "vendors": {
+    "starkbank": {
+      "slug": "starkbank",
+      "name": "StarkBank",
+      "description": "Provedor de serviços de pagamento"
+    }
+  },
+  "roles": {
+    "solicitante": {
+      "slug": "solicitante",
+      "name": "Solicitante",
+      "description": "Usuário que pode criar solicitações de compra",
+      "type": "human"
+    },
+    "aprovador": {
+      "slug": "aprovador",
+      "name": "Aprovador",
+      "description": "Usuário que pode aprovar solicitações de compra",
+      "type": "human"
+    },
+    "financeiro": {
+      "slug": "financeiro",
+      "name": "Financeiro",
+      "description": "Usuário que pode autorizar pagamentos",
+      "type": "human"
+    },
+    "sistema_pagamento": {
+      "slug": "sistema_pagamento",
+      "name": "Sistema de Pagamento",
+      "description": "Sistema que processa pagamentos automaticamente",
+      "type": "system",
+      "vendor": "starkbank"
+    }
+  },
+  "activities": {
+    "criar_solicitacao": {
+      "slug": "criar_solicitacao",
+      "title": "Criar Solicitação de Compra",
+      "flow": "processo_compras",
+      "type": "manual",
+      "roles": [
+        "solicitante"
+      ]
+    },
+    "revisar_solicitacao": {
+      "slug": "revisar_solicitacao",
+      "title": "Revisar Solicitação",
+      "flow": "processo_compras",
+      "type": "manual",
+      "roles": [
+        "aprovador"
+      ]
+    },
+    "processar_pagamento": {
+      "slug": "processar_pagamento",
+      "title": "Processar Pagamento",
+      "flow": "processo_compras",
+      "type": "automated",
+      "roles": [
+        "sistema_pagamento"
+      ],
+      "trigger": "solicitação aprovada"
+    }
+  },
+  "stories": {
+    "criar_nova_solicitacao": {
+      "slug": "criar_nova_solicitacao",
+      "title": "Criar Nova Solicitação de Compra",
+      "activity": "criar_solicitacao",
+      "roles": [
+        "solicitante"
+      ]
+    },
+    "aprovar_solicitacao": {
+      "slug": "aprovar_solicitacao",
+      "title": "Aprovar Solicitação de Compra",
+      "activity": "revisar_solicitacao",
+      "roles": [
+        "aprovador"
+      ]
+    },
+    "enviar_pagamento": {
+      "slug": "enviar_pagamento",
+      "title": "Enviar Pagamento para StarkBank",
+      "activity": "processar_pagamento",
+      "roles": [
+        "sistema_pagamento"
+      ]
+    }
+  },
+  "test_cases": {
+    "teste_criar_solicitacao": {
+      "slug": "teste_criar_solicitacao",
+      "title": "Criar Nova Solicitação",
+      "story": "criar_nova_solicitacao",
+      "role": "solicitante",
+      "interface": {
+        "type": "page",
+        "target": "PaginaSolicitacao"
+      },
+      "steps": [
+        "Acessar página de nova solicitação",
+        "Preencher formulário",
+        "Enviar solicitação"
+      ],
+      "output": {
+        "status": "success",
+        "description": "Solicitação criada com sucesso"
+      }
+    },
+    "teste_aprovacao": {
+      "slug": "teste_aprovacao",
+      "title": "Aprovar Solicitação",
+      "story": "aprovar_solicitacao",
+      "role": "aprovador",
+      "interface": {
+        "type": "page",
+        "target": "PaginaAprovacao"
+      },
+      "steps": [
+        "Acessar lista de solicitações pendentes",
+        "Selecionar solicitação",
+        "Aprovar solicitação"
+      ],
+      "output": {
+        "status": "success",
+        "description": "Solicitação aprovada com sucesso"
+      }
+    },
+    "teste_pagamento": {
+      "slug": "teste_pagamento",
+      "title": "Processar Pagamento",
+      "story": "enviar_pagamento",
+      "role": "sistema_pagamento",
+      "interface": {
+        "type": "api",
+        "target": "POST /api/payments"
+      },
+      "steps": [
+        "Receber webhook de aprovação",
+        "Criar pagamento no StarkBank",
+        "Atualizar status da solicitação"
+      ],
+      "input": {
+        "payment_data": {
+          "amount": 1000,
+          "description": "Compra de material"
+        }
+      },
+      "output": {
+        "status": "success",
+        "description": "Pagamento processado com sucesso"
+      }
+    }
+  },
+  "metadata": {
+    "created_at": "2025-09-06T01:31:24.229Z",
+    "updated_at": "2025-09-06T01:42:36.078Z",
+    "version": "1.0.0"
+  }
+}

@@ -1,0 +1,1106 @@
+{
+  "app": {
+    "slug": "quero_flow",
+    "title": "Quero Flow",
+    "context": "Aplicativo para gestão de fluxos de compra, faturamento e pagamento PJ.",
+    "flows": [
+      {
+        "slug": "faturamento_b2b",
+        "title": "Fluxo Faturamento B2B",
+        "description": "Criação de solicitações de faturamento B2B, aprovação e execução.",
+        "flow_states": [
+          {
+            "slug": "nova_solicitacao",
+            "name": "Nova Solicitação",
+            "order": 0,
+            "is_initial": true,
+            "is_final": false,
+            "allowed_transitions": [
+              "aprovar"
+            ],
+            "required_roles": [
+              "solicitante"
+            ]
+          },
+          {
+            "slug": "aprovar",
+            "name": "Aprovar",
+            "order": 1,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "faturar"
+            ],
+            "required_roles": [
+              "aprovador",
+              "admin"
+            ]
+          },
+          {
+            "slug": "faturar",
+            "name": "Faturar",
+            "order": 2,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "gerar_boleto"
+            ],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "gerar_boleto",
+            "name": "Gerar Boleto",
+            "order": 3,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "conferir_pagamento"
+            ],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "conferir_pagamento",
+            "name": "Conferir Pagamento",
+            "order": 4,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "encerrado"
+            ],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "encerrado",
+            "name": "Encerrado",
+            "order": 5,
+            "is_initial": false,
+            "is_final": true,
+            "allowed_transitions": [],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          }
+        ]
+      },
+      {
+        "slug": "pagamento_pj",
+        "title": "Fluxo de Pagamento PJ",
+        "description": "Lançamento de NF de fornecedor e processamento do pagamento.",
+        "flow_states": [
+          {
+            "slug": "faturamento",
+            "name": "Faturamento",
+            "order": 0,
+            "is_initial": true,
+            "is_final": false,
+            "allowed_transitions": [
+              "entrada_nf"
+            ],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "entrada_nf",
+            "name": "Entrada de NF",
+            "order": 1,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "pagamento"
+            ],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "pagamento",
+            "name": "Pagamento",
+            "order": 2,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "baixa_pagamento"
+            ],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "baixa_pagamento",
+            "name": "Baixa Pagamento",
+            "order": 3,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "encerrado"
+            ],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "encerrado",
+            "name": "Encerrado",
+            "order": 4,
+            "is_initial": false,
+            "is_final": true,
+            "allowed_transitions": [],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          }
+        ]
+      },
+      {
+        "slug": "compras_standard",
+        "title": "Fluxo de Compras (Standard)",
+        "description": "Solicitação, cotação, aprovação, pedido, anexar NF e conferência/pagamento.",
+        "flow_states": [
+          {
+            "slug": "solicitacao",
+            "name": "Solicitação de Compras",
+            "order": 0,
+            "is_initial": true,
+            "is_final": false,
+            "allowed_transitions": [
+              "cotacao",
+              "aprovacao"
+            ],
+            "required_roles": [
+              "solicitante"
+            ]
+          },
+          {
+            "slug": "cotacao",
+            "name": "Cotação",
+            "order": 1,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "aprovacao"
+            ],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "aprovacao",
+            "name": "Aprovação",
+            "order": 2,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "pedido_compra",
+              "extra_budget",
+              "rejeitado"
+            ],
+            "required_roles": [
+              "aprovador",
+              "admin"
+            ]
+          },
+          {
+            "slug": "extra_budget",
+            "name": "Extra Budget",
+            "order": 3,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "pedido_compra",
+              "rejeitado"
+            ],
+            "required_roles": [
+              "aprovador",
+              "admin"
+            ]
+          },
+          {
+            "slug": "pedido_compra",
+            "name": "Pedido de Compra",
+            "order": 4,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "anexar_nf"
+            ],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "anexar_nf",
+            "name": "Anexar NF",
+            "order": 5,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "conferencia_pagamento"
+            ],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "conferencia_pagamento",
+            "name": "Conferência e Pagamento",
+            "order": 6,
+            "is_initial": false,
+            "is_final": true,
+            "allowed_transitions": [],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "rejeitado",
+            "name": "Rejeitado",
+            "order": 7,
+            "is_initial": false,
+            "is_final": true,
+            "allowed_transitions": [],
+            "required_roles": [
+              "aprovador",
+              "admin"
+            ]
+          },
+          {
+            "slug": "historico",
+            "name": "Histórico",
+            "order": 8,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [],
+            "required_roles": [
+              "admin"
+            ]
+          }
+        ]
+      },
+      {
+        "slug": "compras_cartao_credito",
+        "title": "Fluxo de Compras com Cartão de Crédito",
+        "description": "Mesmo fluxo do standard, marcando tipo_cartão; acompanhamento de faturas no Stark Bank (tela de Integrações).",
+        "flow_states": [
+          {
+            "slug": "solicitacao",
+            "name": "Solicitação de Compras",
+            "order": 0,
+            "is_initial": true,
+            "is_final": false,
+            "allowed_transitions": [
+              "cotacao",
+              "aprovacao"
+            ],
+            "required_roles": [
+              "solicitante"
+            ]
+          },
+          {
+            "slug": "cotacao",
+            "name": "Cotação",
+            "order": 1,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "aprovacao"
+            ],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "aprovacao",
+            "name": "Aprovação",
+            "order": 2,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "pedido_compra",
+              "extra_budget",
+              "rejeitado"
+            ],
+            "required_roles": [
+              "aprovador",
+              "admin"
+            ]
+          },
+          {
+            "slug": "extra_budget",
+            "name": "Extra Budget",
+            "order": 3,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "pedido_compra",
+              "rejeitado"
+            ],
+            "required_roles": [
+              "aprovador",
+              "admin"
+            ]
+          },
+          {
+            "slug": "pedido_compra",
+            "name": "Pedido de Compra",
+            "order": 4,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "anexar_nf"
+            ],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "anexar_nf",
+            "name": "Anexar NF",
+            "order": 5,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [
+              "conferencia_pagamento"
+            ],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "conferencia_pagamento",
+            "name": "Conferência e Pagamento",
+            "order": 6,
+            "is_initial": false,
+            "is_final": true,
+            "allowed_transitions": [],
+            "required_roles": [
+              "executor",
+              "admin"
+            ]
+          },
+          {
+            "slug": "rejeitado",
+            "name": "Rejeitado",
+            "order": 7,
+            "is_initial": false,
+            "is_final": true,
+            "allowed_transitions": [],
+            "required_roles": [
+              "aprovador",
+              "admin"
+            ]
+          },
+          {
+            "slug": "historico",
+            "name": "Histórico",
+            "order": 8,
+            "is_initial": false,
+            "is_final": false,
+            "allowed_transitions": [],
+            "required_roles": [
+              "admin"
+            ]
+          }
+        ]
+      }
+    ],
+    "vendors": [
+      {
+        "slug": "protheus",
+        "name": "TOTVS Protheus"
+      },
+      {
+        "slug": "starkbank",
+        "name": "Stark Bank"
+      }
+    ],
+    "roles": [
+      {
+        "slug": "solicitante",
+        "name": "Solicitante",
+        "type": "human"
+      },
+      {
+        "slug": "aprovador",
+        "name": "Aprovador",
+        "type": "human"
+      },
+      {
+        "slug": "executor",
+        "name": "Executor",
+        "type": "human"
+      },
+      {
+        "slug": "gestor",
+        "name": "Gestor",
+        "type": "human"
+      },
+      {
+        "slug": "admin",
+        "name": "Admin",
+        "type": "human"
+      }
+    ],
+    "activities": [
+      {
+        "slug": "criar_solicitacao_faturamento_b2b",
+        "title": "Criar Solicitação de Faturamento B2B",
+        "flow": "faturamento_b2b",
+        "type": "manual",
+        "roles": [
+          "solicitante"
+        ]
+      },
+      {
+        "slug": "aprovar_faturamento_b2b",
+        "title": "Aprovar Solicitação de Faturamento",
+        "flow": "faturamento_b2b",
+        "type": "manual",
+        "roles": [
+          "aprovador",
+          "admin"
+        ]
+      },
+      {
+        "slug": "executar_faturamento_b2b",
+        "title": "Executar Faturamento B2B",
+        "flow": "faturamento_b2b",
+        "type": "manual",
+        "roles": [
+          "executor",
+          "admin"
+        ]
+      },
+      {
+        "slug": "criar_solicitacao_pagamento_pj",
+        "title": "Lançar NF para Pagamento PJ",
+        "flow": "pagamento_pj",
+        "type": "manual",
+        "roles": [
+          "solicitante"
+        ]
+      },
+      {
+        "slug": "processar_pagamento_pj",
+        "title": "Processar Pagamento PJ",
+        "flow": "pagamento_pj",
+        "type": "manual",
+        "roles": [
+          "executor",
+          "admin"
+        ]
+      },
+      {
+        "slug": "abrir_solicitacao_compra",
+        "title": "Abrir Solicitação de Compra",
+        "flow": "compras_standard",
+        "type": "manual",
+        "roles": [
+          "solicitante"
+        ]
+      },
+      {
+        "slug": "realizar_cotacao_compra",
+        "title": "Realizar Cotação",
+        "flow": "compras_standard",
+        "type": "manual",
+        "roles": [
+          "executor",
+          "admin"
+        ]
+      },
+      {
+        "slug": "aprovar_compra",
+        "title": "Aprovar Compra",
+        "flow": "compras_standard",
+        "type": "manual",
+        "roles": [
+          "aprovador",
+          "admin"
+        ]
+      },
+      {
+        "slug": "pedido_compra",
+        "title": "Gerar Pedido de Compra",
+        "flow": "compras_standard",
+        "type": "manual",
+        "roles": [
+          "executor",
+          "admin"
+        ]
+      },
+      {
+        "slug": "anexar_nf_compra",
+        "title": "Anexar NF na Compra",
+        "flow": "compras_standard",
+        "type": "manual",
+        "roles": [
+          "executor",
+          "admin"
+        ]
+      },
+      {
+        "slug": "conferencia_pagamento_compra",
+        "title": "Conferir e Pagar Compra",
+        "flow": "compras_standard",
+        "type": "manual",
+        "roles": [
+          "executor",
+          "admin"
+        ]
+      }
+    ],
+    "stories": [
+      {
+        "slug": "solicitante_cria_faturamento_b2b",
+        "title": "Solicitante cria Faturamento B2B",
+        "activity": "criar_solicitacao_faturamento_b2b",
+        "roles": [
+          "solicitante",
+          "aprovador",
+          "executor"
+        ]
+      },
+      {
+        "slug": "solicitante_lanca_pagamento_pj",
+        "title": "Solicitante lança NF para Pagamento PJ",
+        "activity": "criar_solicitacao_pagamento_pj",
+        "roles": [
+          "solicitante",
+          "executor"
+        ]
+      },
+      {
+        "slug": "executor_realiza_cotacao",
+        "title": "Executor realiza cotação de compra",
+        "activity": "realizar_cotacao_compra",
+        "roles": [
+          "executor"
+        ]
+      },
+      {
+        "slug": "aprovador_aprova_compra",
+        "title": "Aprovador aprova compra",
+        "activity": "aprovar_compra",
+        "roles": [
+          "aprovador",
+          "admin"
+        ]
+      }
+    ]
+  },
+  "flows": {
+    "faturamento_b2b": {
+      "slug": "faturamento_b2b",
+      "title": "Fluxo Faturamento B2B"
+    },
+    "pagamento_pj": {
+      "slug": "pagamento_pj",
+      "title": "Fluxo de Pagamento PJ"
+    },
+    "compras_standard": {
+      "slug": "compras_standard",
+      "title": "Fluxo de Compras (Standard)"
+    },
+    "compras_cartao_credito": {
+      "slug": "compras_cartao_credito",
+      "title": "Fluxo de Compras com Cartão de Crédito"
+    }
+  },
+  "flow_states": {
+    "pendente": {
+      "slug": "pendente",
+      "name": "Pendente",
+      "order": 0,
+      "is_initial": true,
+      "is_final": false
+    },
+    "aprovado": {
+      "slug": "aprovado",
+      "name": "Aprovado",
+      "order": 1,
+      "is_initial": false,
+      "is_final": false
+    },
+    "rejeitado": {
+      "slug": "rejeitado",
+      "name": "Rejeitado",
+      "order": 2,
+      "is_initial": false,
+      "is_final": true
+    },
+    "em_execucao": {
+      "slug": "em_execucao",
+      "name": "Em Execução",
+      "order": 3,
+      "is_initial": false,
+      "is_final": false
+    },
+    "finalizado": {
+      "slug": "finalizado",
+      "name": "Finalizado",
+      "order": 4,
+      "is_initial": false,
+      "is_final": true
+    },
+    "faturamento": {
+      "slug": "faturamento",
+      "name": "Faturamento",
+      "order": 0,
+      "is_initial": true,
+      "is_final": false
+    },
+    "entrada_nf": {
+      "slug": "entrada_nf",
+      "name": "Entrada de NF",
+      "order": 1,
+      "is_initial": false,
+      "is_final": false
+    },
+    "pagamento": {
+      "slug": "pagamento",
+      "name": "Pagamento",
+      "order": 2,
+      "is_initial": false,
+      "is_final": false
+    },
+    "baixa_pagamento": {
+      "slug": "baixa_pagamento",
+      "name": "Baixa Pagamento",
+      "order": 3,
+      "is_initial": false,
+      "is_final": false
+    },
+    "encerrado": {
+      "slug": "encerrado",
+      "name": "Encerrado",
+      "order": 5,
+      "is_initial": false,
+      "is_final": true
+    },
+    "solicitacao": {
+      "slug": "solicitacao",
+      "name": "Solicitação de Compras",
+      "order": 0,
+      "is_initial": true,
+      "is_final": false
+    },
+    "cotacao": {
+      "slug": "cotacao",
+      "name": "Cotação",
+      "order": 1,
+      "is_initial": false,
+      "is_final": false
+    },
+    "aprovacao": {
+      "slug": "aprovacao",
+      "name": "Aprovação",
+      "order": 2,
+      "is_initial": false,
+      "is_final": false
+    },
+    "extra_budget": {
+      "slug": "extra_budget",
+      "name": "Extra Budget",
+      "order": 3,
+      "is_initial": false,
+      "is_final": false
+    },
+    "pedido_compra": {
+      "slug": "pedido_compra",
+      "name": "Pedido de Compra",
+      "order": 4,
+      "is_initial": false,
+      "is_final": false
+    },
+    "anexar_nf": {
+      "slug": "anexar_nf",
+      "name": "Anexar NF",
+      "order": 5,
+      "is_initial": false,
+      "is_final": false
+    },
+    "conferencia_pagamento": {
+      "slug": "conferencia_pagamento",
+      "name": "Conferência e Pagamento",
+      "order": 6,
+      "is_initial": false,
+      "is_final": true
+    },
+    "historico": {
+      "slug": "historico",
+      "name": "Histórico",
+      "order": 8,
+      "is_initial": false,
+      "is_final": false
+    },
+    "nova_solicitacao": {
+      "slug": "nova_solicitacao",
+      "name": "Nova Solicitação",
+      "order": 0,
+      "is_initial": true,
+      "is_final": false
+    },
+    "aprovar": {
+      "slug": "aprovar",
+      "name": "Aprovar",
+      "order": 1,
+      "is_initial": false,
+      "is_final": false
+    },
+    "faturar": {
+      "slug": "faturar",
+      "name": "Faturar",
+      "order": 2,
+      "is_initial": false,
+      "is_final": false
+    },
+    "gerar_boleto": {
+      "slug": "gerar_boleto",
+      "name": "Gerar Boleto",
+      "order": 3,
+      "is_initial": false,
+      "is_final": false
+    },
+    "conferir_pagamento": {
+      "slug": "conferir_pagamento",
+      "name": "Conferir Pagamento",
+      "order": 4,
+      "is_initial": false,
+      "is_final": false
+    }
+  },
+  "vendors": {
+    "protheus": {
+      "slug": "protheus",
+      "name": "TOTVS Protheus"
+    },
+    "starkbank": {
+      "slug": "starkbank",
+      "name": "Stark Bank"
+    }
+  },
+  "roles": {
+    "solicitante": {
+      "slug": "solicitante",
+      "name": "Solicitante",
+      "type": "human"
+    },
+    "aprovador": {
+      "slug": "aprovador",
+      "name": "Aprovador",
+      "type": "human"
+    },
+    "executor": {
+      "slug": "executor",
+      "name": "Executor",
+      "type": "human"
+    },
+    "gestor": {
+      "slug": "gestor",
+      "name": "Gestor",
+      "type": "human"
+    },
+    "admin": {
+      "slug": "admin",
+      "name": "Admin",
+      "type": "human"
+    }
+  },
+  "activities": {
+    "criar_solicitacao_faturamento_b2b": {
+      "slug": "criar_solicitacao_faturamento_b2b",
+      "title": "Criar Solicitação de Faturamento B2B",
+      "flow": "faturamento_b2b",
+      "type": "manual",
+      "roles": [
+        "solicitante"
+      ]
+    },
+    "aprovar_faturamento_b2b": {
+      "slug": "aprovar_faturamento_b2b",
+      "title": "Aprovar Solicitação de Faturamento",
+      "flow": "faturamento_b2b",
+      "type": "manual",
+      "roles": [
+        "aprovador",
+        "admin"
+      ]
+    },
+    "executar_faturamento_b2b": {
+      "slug": "executar_faturamento_b2b",
+      "title": "Executar Faturamento B2B",
+      "flow": "faturamento_b2b",
+      "type": "manual",
+      "roles": [
+        "executor",
+        "admin"
+      ]
+    },
+    "criar_solicitacao_pagamento_pj": {
+      "slug": "criar_solicitacao_pagamento_pj",
+      "title": "Lançar NF para Pagamento PJ",
+      "flow": "pagamento_pj",
+      "type": "manual",
+      "roles": [
+        "solicitante"
+      ]
+    },
+    "processar_pagamento_pj": {
+      "slug": "processar_pagamento_pj",
+      "title": "Processar Pagamento PJ",
+      "flow": "pagamento_pj",
+      "type": "manual",
+      "roles": [
+        "executor",
+        "admin"
+      ]
+    },
+    "abrir_solicitacao_compra": {
+      "slug": "abrir_solicitacao_compra",
+      "title": "Abrir Solicitação de Compra",
+      "flow": "compras_standard",
+      "type": "manual",
+      "roles": [
+        "solicitante"
+      ]
+    },
+    "realizar_cotacao_compra": {
+      "slug": "realizar_cotacao_compra",
+      "title": "Realizar Cotação",
+      "flow": "compras_standard",
+      "type": "manual",
+      "roles": [
+        "executor",
+        "admin"
+      ]
+    },
+    "aprovar_compra": {
+      "slug": "aprovar_compra",
+      "title": "Aprovar Compra",
+      "flow": "compras_standard",
+      "type": "manual",
+      "roles": [
+        "aprovador",
+        "admin"
+      ]
+    },
+    "pedido_compra": {
+      "slug": "pedido_compra",
+      "title": "Gerar Pedido de Compra",
+      "flow": "compras_standard",
+      "type": "manual",
+      "roles": [
+        "executor",
+        "admin"
+      ]
+    },
+    "anexar_nf_compra": {
+      "slug": "anexar_nf_compra",
+      "title": "Anexar NF na Compra",
+      "flow": "compras_standard",
+      "type": "manual",
+      "roles": [
+        "executor",
+        "admin"
+      ]
+    },
+    "conferencia_pagamento_compra": {
+      "slug": "conferencia_pagamento_compra",
+      "title": "Conferir e Pagar Compra",
+      "flow": "compras_standard",
+      "type": "manual",
+      "roles": [
+        "executor",
+        "admin"
+      ]
+    }
+  },
+  "stories": {
+    "solicitante_cria_faturamento_b2b": {
+      "slug": "solicitante_cria_faturamento_b2b",
+      "title": "Solicitante cria Faturamento B2B",
+      "activity": "criar_solicitacao_faturamento_b2b",
+      "roles": [
+        "solicitante",
+        "aprovador",
+        "executor"
+      ]
+    },
+    "solicitante_lanca_pagamento_pj": {
+      "slug": "solicitante_lanca_pagamento_pj",
+      "title": "Solicitante lança NF para Pagamento PJ",
+      "activity": "criar_solicitacao_pagamento_pj",
+      "roles": [
+        "solicitante",
+        "executor"
+      ]
+    },
+    "executor_realiza_cotacao": {
+      "slug": "executor_realiza_cotacao",
+      "title": "Executor realiza cotação de compra",
+      "activity": "realizar_cotacao_compra",
+      "roles": [
+        "executor"
+      ]
+    },
+    "aprovador_aprova_compra": {
+      "slug": "aprovador_aprova_compra",
+      "title": "Aprovador aprova compra",
+      "activity": "aprovar_compra",
+      "roles": [
+        "aprovador",
+        "admin"
+      ]
+    }
+  },
+  "test_cases": {
+    "test_criar_faturamento_b2b": {
+      "slug": "test_criar_faturamento_b2b",
+      "title": "Teste de criação de faturamento B2B",
+      "story": "solicitante_cria_faturamento_b2b",
+      "role": "solicitante",
+      "interface": {
+        "type": "page",
+        "target": "PaginaFaturamentoB2B"
+      },
+      "steps": [
+        "Acessar página de faturamento B2B",
+        "Preencher dados do cliente",
+        "Preencher valor do faturamento",
+        "Anexar documentos necessários",
+        "Submeter solicitação"
+      ],
+      "input": {
+        "cliente": "Cliente Teste LTDA",
+        "valor": 1000,
+        "documentos": [
+          "contrato.pdf"
+        ]
+      },
+      "output": {
+        "status": "success",
+        "description": "Solicitação de faturamento criada com sucesso e enviada para aprovação"
+      }
+    },
+    "test_lancar_pagamento_pj": {
+      "slug": "test_lancar_pagamento_pj",
+      "title": "Teste de lançamento de NF para pagamento PJ",
+      "story": "solicitante_lanca_pagamento_pj",
+      "role": "solicitante",
+      "interface": {
+        "type": "page",
+        "target": "PaginaPagamentoPJ"
+      },
+      "steps": [
+        "Acessar página de pagamento PJ",
+        "Preencher dados do fornecedor",
+        "Anexar nota fiscal",
+        "Preencher dados de pagamento",
+        "Submeter para processamento"
+      ],
+      "input": {
+        "fornecedor": "Fornecedor Teste LTDA",
+        "valor_nf": 5000,
+        "numero_nf": "NF123456",
+        "arquivo_nf": "nf123456.pdf"
+      },
+      "output": {
+        "status": "success",
+        "description": "NF lançada com sucesso e enviada para processamento"
+      }
+    },
+    "test_realizar_cotacao": {
+      "slug": "test_realizar_cotacao",
+      "title": "Teste de realização de cotação",
+      "story": "executor_realiza_cotacao",
+      "role": "executor",
+      "interface": {
+        "type": "page",
+        "target": "PaginaCotacao"
+      },
+      "steps": [
+        "Acessar página de cotações",
+        "Selecionar solicitação pendente",
+        "Adicionar fornecedores para cotação",
+        "Preencher valores cotados",
+        "Anexar propostas recebidas",
+        "Submeter cotação para aprovação"
+      ],
+      "input": {
+        "solicitacao_id": "SOL123",
+        "fornecedores": [
+          "Fornecedor A",
+          "Fornecedor B",
+          "Fornecedor C"
+        ],
+        "valores": [
+          1000,
+          1200,
+          950
+        ],
+        "propostas": [
+          "proposta_a.pdf",
+          "proposta_b.pdf",
+          "proposta_c.pdf"
+        ]
+      },
+      "output": {
+        "status": "success",
+        "description": "Cotação realizada com sucesso e enviada para aprovação"
+      }
+    },
+    "test_aprovar_compra": {
+      "slug": "test_aprovar_compra",
+      "title": "Teste de aprovação de compra",
+      "story": "aprovador_aprova_compra",
+      "role": "aprovador",
+      "interface": {
+        "type": "page",
+        "target": "PaginaAprovacaoCompra"
+      },
+      "steps": [
+        "Acessar página de aprovações",
+        "Selecionar compra pendente",
+        "Revisar cotações e documentação",
+        "Aprovar compra",
+        "Adicionar comentário de aprovação"
+      ],
+      "input": {
+        "compra_id": "COMP123",
+        "comentario": "Aprovado conforme política de compras"
+      },
+      "output": {
+        "status": "success",
+        "description": "Compra aprovada com sucesso e enviada para geração de pedido"
+      }
+    }
+  },
+  "metadata": {
+    "created_at": "2025-09-01T00:00:00Z",
+    "updated_at": "2025-09-06T01:46:02.422Z",
+    "version": "1.0.0"
+  }
+}

@@ -1,0 +1,14 @@
+# Environments
+**/.env
+**/.env.production
+**/node_modules/
+**/dist/
+**/*.tsbuildinfo
+
+# Dist
+package-lock.json
+api/.mastra/
+api/data/mastra/
+
+# Cache
+.DS_Store

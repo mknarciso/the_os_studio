@@ -1,0 +1,32 @@
+{
+  "app": {
+    "slug": "quero_flow",
+    "title": "Flow v2.3",
+    "context": "App desenvolvido para controle dos fluxos de Compras e Faturamento",
+    "problems": [
+      ""
+    ],
+    "features_preview": [
+      ""
+    ]
+  },
+  "flows": {},
+  "flow_states": {},
+  "vendors": {},
+  "roles": {
+    "aprovador": {
+      "slug": "aprovador",
+      "name": "Aprovadores",
+      "description": "Tem poder de negar ou aprovar pagamentos",
+      "type": "human"
+    }
+  },
+  "activities": {},
+  "stories": {},
+  "test_cases": {},
+  "metadata": {
+    "created_at": "2025-08-30T22:44:18.846Z",
+    "updated_at": "2025-08-31T18:30:25.290Z",
+    "version": "1.0.0"
+  }
+}
