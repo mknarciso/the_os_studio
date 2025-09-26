@@ -1,35 +1,41 @@
+@import './globals.css';
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* React Flow Controls - Dark Rounded Panel */
 .rf-controls--dark.react-flow__panel.react-flow__controls {
-  background: rgba(0, 0, 0, 0.7);
+  background: color-mix(in oklch, var(--background) 85%, transparent);
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px color-mix(in oklch, var(--foreground) 12%, transparent);
   overflow: hidden;
 }
 
 .rf-controls--dark .react-flow__controls-button {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #ffffff;
+  background: color-mix(in oklch, var(--card) 85%, transparent);
+  border: 1px solid var(--border);
+  color: var(--foreground);
   border-radius: 8px;
   width: 28px;
   height: 28px;
 }
 
 .rf-controls--dark .react-flow__controls-button:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in oklch, var(--card) 92%, transparent);
 }
 
 .rf-controls--dark .react-flow__controls-button[aria-pressed="true"] {
-  background: rgba(59, 130, 246, 0.18);
-  border-color: rgba(59, 130, 246, 0.35);
-  color: #93c5fd;
+  background: color-mix(in oklch, var(--ring) 18%, transparent);
+  border-color: color-mix(in oklch, var(--ring) 35%, transparent);
+  color: var(--ring);
 }
 
 /* Custom ControlButtons to match panel */
 .rf-controls--dark .rf-controls__btn {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #ffffff;
+  background: color-mix(in oklch, var(--card) 85%, transparent);
+  border: 1px solid var(--border);
+  color: var(--foreground);
   border-radius: 8px;
   width: 28px;
   height: 28px;
@@ -39,24 +45,24 @@
 }
 
 .rf-controls--dark .rf-controls__btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in oklch, var(--card) 92%, transparent);
 }
 
 .rf-controls--dark .rf-controls__btn--primary {
-  border-color: rgba(59, 130, 246, 0.35);
+  border-color: color-mix(in oklch, var(--ring) 35%, transparent);
 }
 
 .rf-controls--dark .rf-controls__btn--danger {
-  border-color: rgba(239, 68, 68, 0.35);
+  border-color: color-mix(in oklch, var(--destructive) 35%, transparent);
 }
 
 /* Legend dark panel alignment */
 .react-flow__panel.legend--dark {
-  background: rgba(0, 0, 0, 0.7);
+  background: color-mix(in oklch, var(--background) 85%, transparent);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px color-mix(in oklch, var(--foreground) 12%, transparent);
   padding: 8px 12px;
 }
 
@@ -66,10 +72,33 @@
   border-radius: 9999px;
   border: 1px solid currentColor;
 }
-* {
+/* Modern CSS Reset compatible with Tailwind/shadcn */
+html {
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Only reset margin/padding for layout elements, not form controls */
+h1, h2, h3, h4, h5, h6, p, blockquote, pre, dl, dd, ol, ul, figure, hr, fieldset, legend {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+}
+
+/* Preserve button and input default styling */
+button, input, optgroup, select, textarea {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
 }
 
 /* Custom Scrollbar for the entire theme */
@@ -79,40 +108,35 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+  background: color-mix(in oklch, var(--card) 92%, transparent);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(138, 43, 226, 0.6);
+  background: color-mix(in oklch, var(--ring) 60%, transparent);
   border-radius: 4px;
-  border: 1px solid rgba(138, 43, 226, 0.3);
+  border: 1px solid color-mix(in oklch, var(--ring) 30%, transparent);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(138, 43, 226, 0.8);
-  border-color: rgba(138, 43, 226, 0.5);
+  background: color-mix(in oklch, var(--ring) 80%, transparent);
+  border-color: color-mix(in oklch, var(--ring) 50%, transparent);
 }
 
 ::-webkit-scrollbar-corner {
-  background: rgba(255, 255, 255, 0.05);
+  background: color-mix(in oklch, var(--card) 92%, transparent);
 }
 
 /* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(138, 43, 226, 0.6) rgba(255, 255, 255, 0.05);
+  scrollbar-color: color-mix(in oklch, var(--ring) 60%, transparent) color-mix(in oklch, var(--card) 92%, transparent);
 }
 
 :root {
-  --neon-base: #8a2be2;
-  --neon-glow: #ff38ff;
-  --neon-dark: #0b0612;
-  --neon-panel: #120a1e;
-  --neon-stroke: #2b1847;
-  --neon-ok: #3cf576;
-  --neon-warn: #ffd166;
-  --neon-err: #ff5c8a;
+  --neon-base: var(--chart-2);
+  --neon-glow: var(--chart-2);
+  --neon-err: var(--destructive);
 }
 
 body {
@@ -121,10 +145,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: radial-gradient(1200px 700px at 30% -10%, rgba(138,43,226,.35), transparent), 
-              radial-gradient(900px 600px at 90% 10%, rgba(255,56,255,.25), transparent), 
-              var(--neon-dark);
-  color: #d4d4d4;
+  background: radial-gradient(1200px 700px at 30% -10%, var(--light-rays-color), transparent), 
+              radial-gradient(900px 600px at 90% 10%, color-mix(in oklch, var(--ring) 25%, transparent), transparent), 
+              var(--background);
+  color: var(--foreground);
   height: 100vh;
   overflow: hidden;
 }
@@ -144,9 +168,9 @@ body {
 /* Top Bar */
 .top-bar {
   height: 48px;
-  background-color: rgba(0,0,0,0.3);
+  background-color: color-mix(in oklch, var(--background) 50%, transparent);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -160,39 +184,6 @@ body {
   gap: 12px;
 }
 
-/* E-Zaz Button */
-.ezaz-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background-color: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.9);
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.ezaz-button:hover {
-  border-color: rgba(255,56,255,0.6);
-  box-shadow: 0 0 0 3px rgba(255,56,255,0.15);
-}
-
-.ezaz-button.active {
-  background: linear-gradient(135deg, var(--neon-base), var(--neon-glow));
-  color: #ffffff;
-  border: 1px solid transparent;
-  box-shadow: 0 0 12px rgba(255,56,255,0.3);
-}
-
-.ezaz-button.active:hover {
-  background: linear-gradient(135deg, var(--neon-base), var(--neon-glow));
-  box-shadow: 0 0 16px rgba(255,56,255,0.4);
-}
-
 .top-bar-logo {
   display: flex;
   align-items: center;
@@ -203,14 +194,14 @@ body {
 .logo-image {
   width: 24px;
   height: 24px;
-  filter: drop-shadow(0 0 8px rgba(255,56,255,0.5));
+  filter: drop-shadow(0 0 8px color-mix(in oklch, var(--ring) 50%, transparent));
 }
 
 .logo-text {
   font-size: 16px;
   font-weight: 600;
-  color: rgba(255,255,255,0.9);
-  text-shadow: 0 0 8px rgba(255,56,255,0.3);
+  color: var(--sidebar-foreground);
+  text-shadow: 0 0 8px color-mix(in oklch, var(--ring) 30%, transparent);
 }
 
 .top-bar-section {
@@ -221,14 +212,14 @@ body {
 
 .top-bar-label {
   font-size: 12px;
-  color: #969696;
+  color: var(--muted-foreground);
   font-weight: 500;
 }
 
 .top-bar-select {
-  background-color: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.9);
+  background-color: color-mix(in oklch, var(--card) 85%, transparent);
+  border: 1px solid var(--border);
+  color: var(--foreground);
   padding: 6px 12px;
   border-radius: 8px;
   font-size: 12px;
@@ -238,12 +229,12 @@ body {
 
 .top-bar-select:focus {
   outline: none;
-  border-color: rgba(255,56,255,0.6);
-  box-shadow: 0 0 0 3px rgba(255,56,255,0.15);
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent);
 }
 
 .top-bar-select:hover {
-  background-color: rgba(255,255,255,0.08);
+  background-color: color-mix(in oklch, var(--card) 92%, transparent);
 }
 
 /* Main Layout */
@@ -278,27 +269,32 @@ body {
   padding: 12px 16px;
   cursor: pointer;
   font-size: 13px;
-  color: #cccccc;
+  color: var(--muted-foreground);
   user-select: none;
   border-radius: 16px;
 }
 
 .nav-item:hover:not(.active) {
-  background-color: rgba(255,255,255,0.05);
+  background-color: color-mix(in oklch, var(--card) 92%, transparent);
 }
 
 .nav-item.active {
-  background-color: rgba(0,0,0,0.3);
+  background-color: color-mix(in oklch, var(--background) 50%, transparent);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 0 0 1px rgba(255,56,255,0.16), 0 0 40px rgba(138,43,226,0.15);
-  color: #f0f0f0;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  color: var(--primary-foreground);
 }
 
 .nav-item .icon {
+  color: var(--muted-foreground);
   margin-right: 12px;
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
+}
+
+.nav-item.active .icon {
+  color: var(--foreground);
 }
 
 .nav-sidebar.collapsed .nav-item {
@@ -327,14 +323,14 @@ body {
   justify-content: center;
   background: transparent; /* ghost */
   border: none; /* ghost */
-  color: #cccccc;
+  color: var(--muted-foreground);
   border-radius: 8px;
   cursor: pointer;
   padding: 0 6px;
 }
 
 .collapse-toggle:hover {
-  background: rgba(255,255,255,0.07); /* subtle ghost hover */
+  background: color-mix(in oklch, var(--card) 93%, transparent); /* subtle ghost hover */
 }
 
 .nav-item .label {
@@ -344,12 +340,12 @@ body {
 }
 
 .nav-item.active .label {
-  color: #ffffff;
+  color: var(--foreground);
 }
 
 .nav-item .description {
   font-size: 11px;
-  color: #969696;
+  color: var(--muted-foreground);
   margin-top: 2px;
 }
 
@@ -365,26 +361,26 @@ body {
 /* File Tree Panel */
 .file-tree-panel {
   width: 280px;
-  background-color: rgba(255,255,255,0.02);
+  background-color: color-mix(in oklch, var(--card) 2%, transparent);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
   border-radius: 16px;
   margin: 16px 0 16px 16px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0 0 1px rgba(255,56,255,0.16), 0 0 40px rgba(138,43,226,0.15);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--ring) 16%, transparent), 0 0 40px color-mix(in oklch, var(--ring) 15%, transparent);
 }
 
 .file-tree-header {
   height: 32px;
   background-color: transparent;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid var(--border);
   border-radius: 16px 16px 0 0;
   display: flex;
   align-items: center;
   padding: 0 16px;
   font-size: 12px;
-  color: rgba(255,255,255,0.8);
+  color: var(--muted-foreground);
   font-weight: 500;
   letter-spacing: 0.5px;
 }
@@ -401,16 +397,16 @@ body {
   padding: 4px 16px;
   cursor: pointer;
   font-size: 13px;
-  color: #cccccc;
+  color: var(--muted-foreground);
   user-select: none;
 }
 
 .file-tree-item:hover {
-  background-color: #2a2d2e;
+  background-color: color-mix(in oklch, var(--card) 88%, transparent);
 }
 
 .file-tree-item.selected {
-  background-color: #094771;
+  background-color: color-mix(in oklch, var(--ring) 20%, transparent);
 }
 
 .file-tree-item.directory {
@@ -439,12 +435,12 @@ body {
 .main-content {
   display: flex;
   flex-direction: column;
-  background-color: rgba(255,255,255,0.02);
+  background-color: color-mix(in oklch, var(--card) 50%, transparent);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
   border-radius: 16px;
   margin: 16px;
-  box-shadow: 0 0 0 1px rgba(255,56,255,0.16), 0 0 40px rgba(138,43,226,0.15);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--ring) 16%, transparent), 0 0 40px color-mix(in oklch, var(--ring) 15%, transparent);
   overflow: hidden;
   min-height: 0;
 }
@@ -453,7 +449,7 @@ body {
 .tab-bar {
   height: 36px;
   background-color: transparent;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid var(--border);
   border-radius: 16px 16px 0 0;
   display: flex;
   align-items: center;
@@ -467,7 +463,7 @@ body {
 .tab {
   padding: 8px 16px;
   font-size: 16px;
-  color: #969696;
+  color: var(--muted-foreground);
   cursor: pointer;
   border-bottom: 2px solid transparent;
   user-select: none;
@@ -477,13 +473,12 @@ body {
 }
 
 .tab:hover {
-  color: #cccccc;
+  color: var(--foreground);
 }
 
 .tab.active {
-  color: #ffffff;
+  color: var(--foreground);
   border-bottom-color: var(--neon-glow);
-  text-shadow: 0 0 8px rgba(255,56,255,0.5);
 }
 
 .tab-controls {
@@ -491,29 +486,6 @@ body {
   align-items: center;
   gap: 8px;
   padding: 0 12px;
-}
-
-.toggle-button {
-  background: none;
-  border: none;
-  color: #969696;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.toggle-button:hover {
-  background-color: #3e3e42;
-  color: #cccccc;
-}
-
-.toggle-button.active {
-  background-color: rgba(255,56,255,0.12);
-  color: var(--neon-glow);
-  box-shadow: 0 0 12px rgba(255,56,255,0.3);
 }
 
 /* Editor Area */
@@ -528,7 +500,7 @@ body {
 .editor-header {
   height: 32px;
   background-color: transparent;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   padding: 0 16px;
@@ -537,32 +509,7 @@ body {
 
 .editor-title {
   font-size: 12px;
-  color: #cccccc;
-}
-
-.save-button {
-  background: linear-gradient(135deg, var(--neon-base), var(--neon-glow));
-  color: white;
-  border: 1px solid rgba(255,56,255,0.3);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 11px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  box-shadow: 0 0 12px rgba(255,56,255,0.3);
-  transition: all 0.2s ease;
-}
-
-.save-button:hover {
-  box-shadow: 0 0 20px rgba(255,56,255,0.5);
-  transform: translateY(-1px);
-}
-
-.save-button:disabled {
-  background-color: #3e3e42;
-  cursor: not-allowed;
+  color: var(--muted-foreground);
 }
 
 .editor-container {
@@ -575,27 +522,27 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #969696;
+  color: var(--muted-foreground);
 }
 
 .error {
   padding: 16px;
-  color: #f48771;
-  background-color: #5a1d1d;
+  color: var(--destructive);
+  background-color: var(--destructive-foreground);
   margin: 16px;
   border-radius: 4px;
-  border: 1px solid #be1100;
+  border: 1px solid var(--destructive);
 }
 
 .success-message {
   position: fixed;
   top: 16px;
   right: 16px;
-  background-color: #0f5132;
-  color: #d1e7dd;
+  background-color: color-mix(in oklch, var(--secondary) 35%, transparent);
+  color: var(--secondary-foreground);
   padding: 12px 16px;
   border-radius: 4px;
-  border: 1px solid #0a3622;
+  border: 1px solid color-mix(in oklch, var(--secondary) 55%, transparent);
   z-index: 1000;
   animation: slideIn 0.3s ease-out;
 }
@@ -615,14 +562,14 @@ body {
 .chat-panel {
   width: 320px;
   height: calc(100vh - 48px - 32px);
-  background-color: rgba(255,255,255,0.02);
+  background-color: color-mix(in oklch, var(--card) 50%, transparent);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
   border-radius: 16px;
   margin: 16px 16px 16px 0;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0 0 1px rgba(255,56,255,0.16), 0 0 40px rgba(138,43,226,0.15);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--ring) 16%, transparent), 0 0 40px color-mix(in oklch, var(--ring) 15%, transparent);
   transition: all 0.3s ease;
 }
 
@@ -641,7 +588,7 @@ body {
   cursor: col-resize;
   margin: 16px 4px 16px -11px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in oklch, var(--card) 92%, transparent);
   opacity: 0;
   transition: opacity 0.12s ease;
 }
@@ -663,8 +610,8 @@ body {
   border-radius: 0;
   margin: 0;
   border: none;
-  box-shadow: 0 0 0 1px rgba(255,56,255,0.3);
-  background-color: rgba(0,0,0,0.50);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--ring) 30%, transparent);
+  background-color: color-mix(in oklch, var(--foreground) 50%, transparent);
   backdrop-filter: blur(15px);
 }
 
@@ -701,21 +648,21 @@ body {
   width: 32px;
   height: 32px;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.7);
+  border: 1px solid var(--border);
+  color: var(--foreground);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .chat-header-button:hover {
-  background: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.9);
-  border-color: rgba(255,56,255,0.3);
+  background: color-mix(in oklch, var(--card) 92%, transparent);
+  color: var(--foreground);
+  border-color: color-mix(in oklch, var(--ring) 30%, transparent);
 }
 
 .thread-title {
-  color: rgba(255,255,255,0.6);
+  color: var(--muted-foreground);
   font-size: 12px;
   font-weight: normal;
   white-space: nowrap;
@@ -727,12 +674,12 @@ body {
   width: 16px;
   height: 16px;
   color: var(--neon-glow);
-  filter: drop-shadow(0 0 8px rgba(255,56,255,0.5));
+  filter: drop-shadow(0 0 8px color-mix(in oklch, var(--ring) 50%, transparent));
 }
 
 .chat-header .title {
   font-size: 12px;
-  color: #cccccc;
+  color: var(--muted-foreground);
   font-weight: 500;
 }
 
@@ -755,8 +702,8 @@ body {
 }
 
 .tool-card {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: color-mix(in oklch, var(--card) 92%, transparent);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 8px 10px;
 }
@@ -773,7 +720,7 @@ body {
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #e5e7eb;
+  color: var(--foreground);
 }
 
 .tool-card-body details {
@@ -783,13 +730,13 @@ body {
 .tool-card-body summary {
   cursor: pointer;
   font-size: 11px;
-  color: #a1a1aa;
+  color: var(--muted-foreground);
 }
 
 .tool-card-body pre {
   margin: 6px 0 0 0;
   padding: 8px;
-  background: rgba(0,0,0,0.35);
+  background: color-mix(in oklch, var(--background) 35%, transparent);
   border-radius: 8px;
   overflow-x: auto;
   font-size: 12px;
@@ -801,17 +748,17 @@ body {
 }
 
 .chat-messages::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.05);
+  background: color-mix(in oklch, var(--card) 92%, transparent);
   border-radius: 3px;
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-  background: rgba(255,56,255,0.3);
+  background: color-mix(in oklch, var(--ring) 30%, transparent);
   border-radius: 3px;
 }
 
 .chat-messages::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,56,255,0.5);
+  background: color-mix(in oklch, var(--ring) 50%, transparent);
 }
 
 /* Markdown Styling in Assistant Messages */
@@ -822,7 +769,7 @@ body {
 .assistant-message h5,
 .assistant-message h6 {
   margin: 0.5em 0 0.3em 0;
-  color: rgba(255,255,255,0.95);
+  color: var(--foreground);
   font-weight: 600;
 }
 
@@ -833,6 +780,7 @@ body {
 .assistant-message p {
   margin: 0.5em 0;
   line-height: 1.5;
+  color: var(--foreground);
 }
 
 .assistant-message ul,
@@ -844,48 +792,49 @@ body {
 .assistant-message li {
   margin: 0.2em 0;
   line-height: 1.4;
+  color: var(--foreground);
 }
 
 .assistant-message code {
-  background: rgba(0,0,0,0.3);
+  background: color-mix(in oklch, var(--secondary) 20%, transparent);
   padding: 0.1em 0.3em;
   border-radius: 3px;
-  font-family: 'Courier New', monospace;
+  font-family: var(font-mono);
   font-size: 0.9em;
-  color: #ff38ff;
+  color: var(--foreground);
 }
 
 .assistant-message pre {
-  background: rgba(0,0,0,0.4);
+  background: color-mix(in oklch, var(--background) 40%, transparent);
   padding: 0.8em;
   border-radius: 6px;
   overflow-x: auto;
   margin: 0.5em 0;
-  border-left: 3px solid rgba(255,56,255,0.5);
+  border-left: 3px solid color-mix(in oklch, var(--ring) 50%, transparent);
 }
 
 .assistant-message pre code {
   background: none;
   padding: 0;
-  color: rgba(255,255,255,0.9);
+  color: var(--foreground);
 }
 
 .assistant-message blockquote {
-  border-left: 3px solid rgba(255,56,255,0.5);
+  border-left: 3px solid color-mix(in oklch, var(--ring) 50%, transparent);
   padding-left: 1em;
   margin: 0.5em 0;
   font-style: italic;
-  color: rgba(255,255,255,0.8);
+  color: var(--muted-foreground);
 }
 
 .assistant-message strong {
   font-weight: 600;
-  color: rgba(255,255,255,0.95);
+  color: var(--foreground);
 }
 
 .assistant-message em {
   font-style: italic;
-  color: rgba(255,255,255,0.9);
+  color: var(--foreground);
 }
 
 /* Typing Indicator */
@@ -904,7 +853,7 @@ body {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: rgba(255,255,255,0.6);
+  background-color: color-mix(in oklch, var(--foreground) 60%, transparent);
   animation: typing-bounce 1.4s infinite ease-in-out;
 }
 
@@ -955,14 +904,14 @@ body {
 
 .message-bubble.user {
   background: linear-gradient(135deg, var(--neon-base), var(--neon-glow));
-  color: #ffffff;
+  color: var(--primary-foreground);
   box-shadow: 0 0 12px rgba(255,56,255,0.3);
 }
 
 .message-bubble.assistant {
-  background-color: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.9);
+  background-color: color-mix(in oklch, var(--card) 88%, transparent);
+  border: 1px solid var(--border);
+  color: var(--foreground);
 }
 
 .tool-message {
@@ -970,16 +919,16 @@ body {
   width: auto;
   max-width: 90%;
   padding: 8px 12px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: color-mix(in oklch, var(--card) 93%, transparent);
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 12px;
-  color: #a1a1aa;
+  color: var(--muted-foreground);
 }
 
 .tool-message.error {
-  background: rgba(239, 68, 68, 0.08);
-  border-color: rgba(239, 68, 68, 0.35);
+  background: color-mix(in oklch, var(--destructive) 8%, transparent);
+  border-color: color-mix(in oklch, var(--destructive) 35%, transparent);
 }
 
 .tool-message-header {
@@ -992,7 +941,7 @@ body {
 
 .tool-message-title {
   font-weight: 600;
-  color: #d4d4d4;
+  color: var(--foreground);
 }
 
 .tool-message-details {
@@ -1002,18 +951,18 @@ body {
 .tool-section-title {
   text-transform: lowercase;
   font-size: 11px;
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   margin-bottom: 4px;
 }
 
 .tool-section-title.error {
-  color: #fda4af; /* rose-300 */
+  color: var(--destructive);
 }
 
 .tool-message-details pre {
   margin-top: 4px;
   padding: 8px;
-  background: rgba(0,0,0,0.3);
+  background: color-mix(in oklch, var(--background) 35%, transparent);
   border-radius: 6px;
   font-size: 11px;
   white-space: pre-wrap;
@@ -1021,9 +970,9 @@ body {
 }
 
 .tool-error-pre {
-  background: rgba(127, 29, 29, 0.35) !important;
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  color: #fecaca; /* rose-200 */
+  background: color-mix(in oklch, var(--destructive) 12%, transparent) !important;
+  border: 1px solid color-mix(in oklch, var(--destructive) 35%, transparent);
+  color: var(--destructive-foreground);
 }
 
 /* Assistant Message - Full Width */
@@ -1044,16 +993,15 @@ body {
   bottom: 0;
   z-index: 3;
   padding: 8px 12px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.4));
   position: sticky;
   bottom: 0;
 }
 
 .chat-input-field {
   width: 100%;
-  background-color: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.9);
+  background-color: color-mix(in oklch, var(--card) 92%, transparent);
+  border: 1px solid var(--border);
+  color: var(--foreground);
   padding: 8px;
   border-radius: 8px;
   font-size: 14px;
@@ -1070,12 +1018,12 @@ body {
 
 .chat-input-field:focus {
   outline: none;
-  border-color: rgba(255,56,255,0.6);
-  box-shadow: 0 0 0 3px rgba(255,56,255,0.15);
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent);
 }
 
 .chat-input-field::placeholder {
-  color: #969696;
+  color: var(--muted-foreground);
 }
 
 /* Thread Menu Flutuante */
@@ -1085,7 +1033,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: color-mix(in oklch, var(--background) 50%, transparent);
   backdrop-filter: blur(4px);
   z-index: 1000;
   display: flex;
@@ -1094,10 +1042,10 @@ body {
 }
 
 .thread-menu {
-  background: var(--neon-panel);
-  border: 1px solid rgba(255,56,255,0.3);
+  background: color-mix(in oklch, var(--card) 50%, transparent);
+  border: 1px solid color-mix(in oklch, var(--ring) 30%, transparent);
   border-radius: 12px;
-  box-shadow: 0 0 0 1px rgba(255,56,255,0.16), 0 0 40px rgba(138,43,226,0.15);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--ring) 16%, transparent), 0 0 40px color-mix(in oklch, var(--ring) 15%, transparent);
   width: 400px;
   max-width: 90vw;
   max-height: 500px;
@@ -1121,11 +1069,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  background-color: rgba(255,255,255,0.02);
+  border-bottom: 1px solid var(--border);
+  background-color: color-mix(in oklch, var(--card) 92%, transparent);
   font-size: 14px;
   font-weight: 600;
-  color: rgba(255,255,255,0.9);
+  color: var(--foreground);
 }
 
 .thread-menu-content {
@@ -1136,7 +1084,7 @@ body {
 .close-button {
   background: transparent;
   border: none;
-  color: rgba(255,255,255,0.6);
+  color: var(--muted-foreground);
   cursor: pointer;
   font-size: 18px;
   width: 24px;
@@ -1149,32 +1097,30 @@ body {
 }
 
 .close-button:hover {
-  background: rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.9);
+  background: color-mix(in oklch, var(--card) 92%, transparent);
+  color: var(--foreground);
 }
-
-
 
 .thread-item {
   padding: 12px 16px;
   cursor: pointer;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid color-mix(in oklch, var(--border) 50%, transparent);
   transition: all 0.2s ease;
 }
 
 .thread-item:hover {
-  background-color: rgba(255,255,255,0.05);
+  background-color: color-mix(in oklch, var(--card) 92%, transparent);
 }
 
 .thread-item.active {
-  background-color: rgba(255,56,255,0.1);
+  background-color: color-mix(in oklch, var(--ring) 10%, transparent);
   border-left: 3px solid var(--neon-glow);
 }
 
 .thread-item-title {
   font-size: 13px;
   font-weight: 500;
-  color: rgba(255,255,255,0.9);
+  color: var(--foreground);
   margin-bottom: 4px;
   white-space: nowrap;
   overflow: hidden;
@@ -1183,7 +1129,7 @@ body {
 
 .thread-item-info {
   font-size: 11px;
-  color: rgba(255,255,255,0.5);
+  color: var(--muted-foreground);
 }
 
 .no-threads {
@@ -1208,7 +1154,7 @@ body {
   width: 120px;
   height: 120px;
   margin-bottom: 24px;
-  filter: drop-shadow(0 0 20px rgba(255,56,255,0.4));
+  filter: drop-shadow(0 0 20px color-mix(in oklch, var(--ring) 40%, transparent));
   animation: float 3s ease-in-out infinite;
 }
 
@@ -1220,13 +1166,13 @@ body {
 .chat-blank-state .title {
   font-size: 18px;
   font-weight: 600;
-  color: rgba(255,255,255,0.9);
+  color: var(--foreground);
   margin-bottom: 8px;
 }
 
 .chat-blank-state .subtitle {
   font-size: 14px;
-  color: rgba(255,255,255,0.6);
+  color: var(--muted-foreground);
   line-height: 1.5;
   margin-bottom: 24px;
 }
@@ -1242,16 +1188,16 @@ body {
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 12px;
-  background-color: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.8);
+  background-color: color-mix(in oklch, var(--card) 92%, transparent);
+  border: 1px solid var(--border);
+  color: var(--muted-foreground);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .suggestion-chip:hover {
-  background-color: rgba(255,56,255,0.1);
-  border-color: rgba(255,56,255,0.3);
+  background-color: color-mix(in oklch, var(--ring) 10%, transparent);
+  border-color: color-mix(in oklch, var(--ring) 30%, transparent);
   transform: translateY(-1px);
 }
 
@@ -1305,7 +1251,7 @@ body {
 .nav-header h3 {
   font-size: 14px;
   font-weight: 500;
-  color: #d4d4d4;
+  color: var(--muted-foreground);
 }
 
 .nav-sections {
@@ -1333,7 +1279,7 @@ body {
 
 .nav-section-item.active {
   background-color: var(--neon-base-lighter);
-  color: #fff;
+  color: var(--foreground);
 }
 
 .section-header {
@@ -1344,13 +1290,13 @@ body {
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  color: #b3b3b3;
+  color: var(--muted-foreground);
   transition: all 0.2s ease;
 }
 
 .section-header:hover {
   background-color: rgba(255,255,255,0.05);
-  color: #d4d4d4;
+  color: var(--muted-foreground);
 }
 
 .section-content {
@@ -1369,13 +1315,13 @@ body {
   padding: 6px 16px;
   cursor: pointer;
   font-size: 12px;
-  color: #969696;
+  color: var(--muted-foreground);
   transition: all 0.2s ease;
 }
 
 .entity-item:hover {
   background-color: rgba(255,255,255,0.05);
-  color: #d4d4d4;
+  color: var(--muted-foreground);
 }
 
 .entity-item.active {
@@ -1384,7 +1330,7 @@ body {
 }
 
 .entity-item.add-new {
-  color: #7c7c7c;
+  color: var(--muted-foreground);
   font-style: italic;
 }
 
@@ -1427,7 +1373,7 @@ body {
 
 .empty-state {
   text-align: center;
-  color: #7c7c7c;
+  color: var(--muted-foreground);
 }
 
 .editor-header {
@@ -1442,7 +1388,7 @@ body {
 .editor-header h3 {
   font-size: 16px;
   font-weight: 500;
-  color: #d4d4d4;
+  color: var(--muted-foreground);
 }
 
 .editor-actions {
@@ -1468,7 +1414,7 @@ body {
 }
 
 .save-btn:hover:not(:disabled) {
-  background-color: #9932cc;
+  background-color: color-mix(in oklch, var(--ring) 60%, transparent);
 }
 
 .save-btn:disabled {
@@ -1482,7 +1428,7 @@ body {
 }
 
 .delete-btn:hover:not(:disabled) {
-  background-color: #ff4757;
+  background-color: color-mix(in oklch, var(--destructive) 60%, transparent);
 }
 
 .delete-btn:disabled {
@@ -1491,7 +1437,7 @@ body {
 }
 
 .error-message {
-  color: #fc8181; /* A light red for the text */
+  color: var(--destructive-foreground);
   font-size: 12px; /* Smaller font size */
   margin-top: 4px;
   font-weight: 400;
@@ -1501,11 +1447,11 @@ body {
 }
 
 .api-error-message {
-  background-color: rgba(229, 62, 62, 0.1);
-  border-left: 3px solid #e53e3e;
+  background-color: color-mix(in oklch, var(--destructive) 10%, transparent);
+  border-left: 3px solid var(--destructive);
   padding: 12px 16px;
   margin-bottom: 16px;
-  color: #fc8181;
+  color: var(--destructive);
   font-size: 13px;
   border-radius: 4px;
 }
@@ -1526,7 +1472,7 @@ body {
   font-weight: 500;
   margin-bottom: 0.5rem;
   font-size: 0.875rem;
-  color: #a0aec0; /* gray-400 */
+  color: var(--muted-foreground); /* gray-400 */
 }
 
 .form-group input,
@@ -1534,10 +1480,10 @@ body {
 .form-group select {
   width: 100%;
   padding: 8px 12px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: color-mix(in oklch, var(--background) 5%, transparent);
+  border: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
   border-radius: 4px;
-  color: #d4d4d4;
+  color: var(--muted-foreground);
   font-size: 13px;
   font-family: inherit;
   transition: border-color 0.2s;
@@ -1561,11 +1507,11 @@ body {
 }
 
 .form-group .input-error {
-  border-color: #e53e3e; /* red-500 */
+  border-color: var(--destructive);
 }
 
 .form-group .error-message {
-  color: #fc8181; /* A light red for the text */
+  color: var(--destructive-foreground);
   font-size: 12px; /* Smaller font size */
   margin-top: 4px;
   font-weight: 400;
@@ -1624,7 +1570,7 @@ body {
 }
 
 .loading-text {
-  color: #969696;
+  color: var(--muted-foreground);
   font-size: 14px;
 }
 
@@ -1632,21 +1578,21 @@ body {
 .documentation-content {
   max-width: 800px;
   margin: 0 auto;
-  color: #d4d4d4;
+  color: var(--muted-foreground);
   line-height: 1.6;
 }
 
 .documentation-content h1,
 .documentation-content h2,
 .documentation-content h3 {
-  color: #ffffff;
+  color: var(--foreground);
   margin-top: 24px;
   margin-bottom: 12px;
 }
 
 .documentation-content h1 {
   font-size: 24px;
-  border-bottom: 1px solid #3e3e42;
+  border-bottom: 1px solid var(--border);
   padding-bottom: 8px;
 }
 
@@ -1663,7 +1609,7 @@ body {
 }
 
 .documentation-content code {
-  background-color: #2d2d30;
+  background-color: color-mix(in oklch, var(--background) 35%, transparent);
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
@@ -1671,7 +1617,7 @@ body {
 }
 
 .documentation-content pre {
-  background-color: #2d2d30;
+  background-color: color-mix(in oklch, var(--background) 35%, transparent);
   padding: 12px;
   border-radius: 4px;
   overflow-x: auto;
@@ -1686,14 +1632,14 @@ body {
 /* Documentation Explorer Styles */
 .documentation-explorer {
   height: 100%;
-  color: #d4d4d4;
+  color: var(--muted-foreground);
   display: flex;
   min-height: 0;
 }
 
 .documentation-explorer-simple {
   height: 100%;
-  color: #d4d4d4;
+  color: var(--muted-foreground);
   min-height: 0;
 }
 
@@ -1713,7 +1659,7 @@ body {
 
 .explorer-header h1 {
   font-size: 32px;
-  color: #ffffff;
+  color: var(--foreground);
   margin: 0;
 }
 
@@ -1724,8 +1670,8 @@ body {
 }
 
 .explorer-section {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in oklch, var(--background) 5%, transparent);
+  border: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
   border-radius: 12px;
   padding: 24px;
 }
@@ -1750,21 +1696,21 @@ body {
 
 .section-info h2 {
   font-size: 24px;
-  color: #ffffff;
+  color: var(--foreground);
   margin: 0 0 8px 0;
 }
 
 .section-info p {
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   margin: 0;
   font-size: 14px;
 }
 
 /* App Overview */
 .app-overview .section-icon {
-  background: rgba(16, 185, 129, 0.2);
-  border-color: rgba(16, 185, 129, 0.4);
-  color: #10b981;
+  background: color-mix(in oklch, var(--secondary) 20%, transparent);
+  border-color: color-mix(in oklch, var(--secondary) 40%, transparent);
+  color: var(--secondary);
 }
 
 .app-description {
@@ -1775,7 +1721,7 @@ body {
 
 .pain-points h3 {
   font-size: 18px;
-  color: #ffffff;
+  color: var(--foreground) ;
   margin-bottom: 16px;
 }
 
@@ -1786,14 +1732,14 @@ body {
   margin-bottom: 12px;
   padding: 16px;
   background: rgba(255, 92, 138, 0.1);
-  border-left: 3px solid #ff5c8a;
+  border-left: 3px solid var(--accent);
   border-radius: 8px;
 }
 
 .pain-point-indicator {
   width: 4px;
   height: 4px;
-  background: #ff5c8a;
+  background: var(--accent);
   border-radius: 50%;
   margin-top: 8px;
   flex-shrink: 0;
@@ -1801,7 +1747,7 @@ body {
 
 .pain-point p {
   margin: 0;
-  color: #d4d4d4;
+  color: var(--muted-foreground);
 }
 
 /* Personas */
@@ -1812,8 +1758,8 @@ body {
 }
 
 .persona-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in oklch, var(--background) 3%, transparent);
+  border: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
   border-radius: 12px;
   padding: 20px;
 }
@@ -1839,7 +1785,7 @@ body {
 
 .persona-info h3 {
   font-size: 18px;
-  color: #ffffff;
+  color: var(--foreground) ;
   margin: 0;
 }
 
@@ -1851,14 +1797,14 @@ body {
 }
 
 .persona-description {
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   margin-bottom: 20px;
   line-height: 1.5;
 }
 
 .persona-activities h4 {
   font-size: 12px;
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   margin-bottom: 12px;
   letter-spacing: 0.5px;
 }
@@ -1871,7 +1817,7 @@ body {
 
 .activity-tag {
   background: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
+  color: var(--accent);
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 12px;
@@ -1886,8 +1832,8 @@ body {
 .flow-section-header {
   cursor: pointer;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in oklch, var(--background) 3%, transparent);
+  border: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
   border-radius: 8px;
   margin-bottom: 12px;
 }
@@ -1900,12 +1846,12 @@ body {
 
 .flow-section-title h3 {
   font-size: 18px;
-  color: #ffffff;
+  color: var(--foreground) ;
   margin: 0;
 }
 
 .task-count {
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   font-size: 14px;
 }
 
@@ -1916,8 +1862,8 @@ body {
 }
 
 .flow-task {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in oklch, var(--background) 3%, transparent);
+  border: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
   border-radius: 8px;
   padding: 16px;
 }
@@ -1947,12 +1893,12 @@ body {
 
 .task-content h4 {
   font-size: 16px;
-  color: #ffffff;
+  color: var(--background) ;
   margin: 0 0 8px 0;
 }
 
 .task-content p {
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   margin: 0;
   font-size: 14px;
 }
@@ -1971,16 +1917,16 @@ body {
 }
 
 .status-indicator.pending {
-  background: #ffd166;
+  background: color-mix(in oklch, var(--secondary) 50%, transparent);
 }
 
 .status-text {
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   font-size: 12px;
 }
 
 .status-icon {
-  color: #a1a1aa;
+  color: var(--muted-foreground);
 }
 
 /* Stories Grid */
@@ -1991,8 +1937,8 @@ body {
 }
 
 .story-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in oklch, var(--background) 3%, transparent);
+  border: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
   border-radius: 8px;
   padding: 16px;
 }
@@ -2015,12 +1961,12 @@ body {
 
 .story-header h3 {
   font-size: 16px;
-  color: #ffffff;
+  color: var(--foreground) ;
   margin: 0;
 }
 
 .story-description {
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   margin-bottom: 12px;
   font-size: 14px;
   line-height: 1.4;
@@ -2028,7 +1974,7 @@ body {
 
 .story-meta {
   font-size: 12px;
-  color: #a1a1aa;
+  color: var(--muted-foreground);
 }
 
 /* Team History */
@@ -2042,14 +1988,14 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in oklch, var(--background) 3%, transparent);
+  border: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
   border-radius: 8px;
 }
 
 .history-section-header h3 {
   font-size: 16px;
-  color: #ffffff;
+  color: var(--foreground) ;
   margin: 0;
 }
 
@@ -2090,8 +2036,8 @@ body {
 }
 
 .expandable-section {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -2106,7 +2052,7 @@ body {
 }
 
 .expandable-header:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: color-mix(in oklch, var(--background) 5%, transparent);
 }
 
 .expandable-title {
@@ -2129,7 +2075,7 @@ body {
 
 .expandable-title h3 {
   font-size: 18px;
-  color: #ffffff;
+  color: var(--foreground) ;
   margin: 0;
 }
 
@@ -2138,14 +2084,14 @@ body {
 }
 
 .expand-indicator {
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   transition: transform 0.2s ease;
 }
 
 .expandable-content {
   padding: 0 24px 24px 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
+  background: color-mix(in oklch, var(--background) 5%, transparent);
 }
 
 .entity-buttons {
@@ -2156,11 +2102,11 @@ body {
 }
 
 .entity-button {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 12px 16px;
-  color: #d4d4d4;
+  color: var(--muted-foreground);
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: left;
@@ -2168,14 +2114,14 @@ body {
 }
 
 .entity-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(138, 43, 226, 0.4);
+  background: var(--border);
+  border-color: var(--ring);
   color: var(--neon-glow);
   transform: translateY(-1px);
 }
 
 .empty-section {
-  color: #6b7280;
+  color: var(--muted-foreground);
   font-style: italic;
   padding: 16px 0;
   text-align: center;
@@ -2190,8 +2136,8 @@ body {
 }
 
 .flow-group {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in oklch, var(--background) 5%, transparent);
+  border: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
   border-radius: 8px;
   padding: 16px;
 }
@@ -2202,7 +2148,7 @@ body {
   justify-content: space-between;
   margin-bottom: 12px;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
 }
 
 .flow-group-title {
@@ -2217,14 +2163,14 @@ body {
 
 .flow-group-title h4 {
   font-size: 16px;
-  color: #ffffff;
+  color: var(--background) ;
   margin: 0;
 }
 
 .flow-count {
   font-size: 12px;
-  color: #a1a1aa;
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--muted-foreground);
+  background: color-mix(in oklch, var(--background) 10%, transparent);
   padding: 2px 6px;
   border-radius: 3px;
 }
@@ -2270,8 +2216,8 @@ body {
 
 .activity-type {
   font-size: 11px;
-  color: #a1a1aa;
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--muted-foreground);
+  background: color-mix(in oklch, var(--background) 10%, transparent);
   padding: 2px 6px;
   border-radius: 3px;
   text-transform: capitalize;
@@ -2286,15 +2232,15 @@ body {
 }
 
 .test-card-compact {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in oklch, var(--background) 5%, transparent);
+  border: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
   border-radius: 8px;
   padding: 16px;
   transition: all 0.2s ease;
 }
 
 .test-card-compact:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in oklch, var(--background) 10%, transparent);
   border-color: rgba(138, 43, 226, 0.4);
   transform: translateY(-1px);
 }
@@ -2320,7 +2266,7 @@ body {
 
 .test-header-compact h4 {
   font-size: 14px;
-  color: #ffffff;
+  color: var(--background) ;
   margin: 0;
 }
 
@@ -2330,12 +2276,12 @@ body {
 
 .test-meta-compact > div {
   font-size: 11px;
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   margin-bottom: 3px;
 }
 
 .test-steps-compact {
-  color: #d4d4d4;
+  color: var(--muted-foreground);
   font-size: 12px;
 }
 
@@ -2360,10 +2306,10 @@ body {
   align-items: center;
   justify-content: center;
   height: 200px;
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   font-size: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in oklch, var(--background) 3%, transparent);
+  border: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
   border-radius: 12px;
 }
 
@@ -2374,7 +2320,7 @@ body {
 
 .features-preview h3 {
   font-size: 18px;
-  color: #ffffff;
+  color: var(--foreground) ;
   margin-bottom: 16px;
 }
 
@@ -2385,18 +2331,18 @@ body {
   margin-bottom: 12px;
   padding: 12px;
   background: rgba(16, 185, 129, 0.1);
-  border-left: 3px solid #10b981;
+  border-left: 3px solid var(--accent);
   border-radius: 8px;
 }
 
 .feature-item svg {
-  color: #10b981;
+  color: var(--accent);
   flex-shrink: 0;
 }
 
 .feature-item p {
   margin: 0;
-  color: #d4d4d4;
+  color: var(--muted-foreground);
 }
 
 /* Mapa Content */
@@ -2411,8 +2357,8 @@ body {
 }
 
 .activity-map-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in oklch, var(--background) 3%, transparent);
+  border: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
   border-radius: 12px;
   padding: 20px;
 }
@@ -2423,7 +2369,7 @@ body {
   gap: 12px;
   margin-bottom: 16px;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.03);
+  background: color-mix(in oklch, var(--background) 3%, transparent);
   border-radius: 8px;
 }
 
@@ -2442,21 +2388,21 @@ body {
 .activity-header h3 {
   flex: 1;
   font-size: 16px;
-  color: #ffffff;
+  color: var(--foreground) ;
   margin: 0;
 }
 
 .activity-type {
   font-size: 12px;
-  color: #a1a1aa;
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--muted-foreground);
+  background: color-mix(in oklch, var(--background) 10%, transparent);
   padding: 4px 8px;
   border-radius: 4px;
 }
 
 .stories-list h4 {
   font-size: 14px;
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   margin-bottom: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -2468,9 +2414,9 @@ body {
   gap: 8px;
   padding: 8px 12px;
   margin-bottom: 8px;
-  background: rgba(255, 255, 255, 0.03);
+  background: color-mix(in oklch, var(--background) 3%, transparent);
   border-radius: 6px;
-  color: #d4d4d4;
+  color: var(--muted-foreground);
   font-size: 14px;
 }
 
@@ -2480,7 +2426,7 @@ body {
 }
 
 .empty-stories {
-  color: #6b7280;
+  color: var(--muted-foreground);
   font-style: italic;
   padding: 8px 12px;
   text-align: center;
@@ -2498,8 +2444,8 @@ body {
 }
 
 .test-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in oklch, var(--background) 3%, transparent);
+  border: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
   border-radius: 12px;
   padding: 20px;
 }
@@ -2525,7 +2471,7 @@ body {
 
 .test-header h3 {
   font-size: 16px;
-  color: #ffffff;
+  color: var(--foreground) ;
   margin: 0;
 }
 
@@ -2535,12 +2481,12 @@ body {
 
 .test-meta > div {
   font-size: 12px;
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   margin-bottom: 4px;
 }
 
 .test-steps {
-  color: #d4d4d4;
+  color: var(--muted-foreground);
   font-size: 14px;
 }
 
@@ -2555,13 +2501,13 @@ body {
   gap: 16px;
   margin-bottom: 32px;
   padding-bottom: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
 }
 
 .back-button {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #d4d4d4;
+  background: color-mix(in oklch, var(--background) 10%, transparent);
+  border: 1px solid color-mix(in oklch, var(--background) 20%, transparent);
+  color: var(--muted-foreground);
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
@@ -2570,21 +2516,21 @@ body {
 }
 
 .back-button:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
+  background: color-mix(in oklch, var(--background) 20%, transparent);
+  color: var(--background) ;
 }
 
 .entity-detail-header h3 {
   flex: 1;
   font-size: 24px;
-  color: #ffffff;
+  color: var(--foreground) ;
   margin: 0;
 }
 
 .entity-type {
   font-size: 12px;
-  color: #a1a1aa;
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--muted-foreground);
+  background: color-mix(in oklch, var(--background) 10%, transparent);
   padding: 4px 8px;
   border-radius: 4px;
   text-transform: uppercase;
@@ -2599,18 +2545,18 @@ body {
 
 .entity-section h4 {
   font-size: 16px;
-  color: #ffffff;
+  color: var(--foreground) ;
   margin-bottom: 12px;
 }
 
 .entity-section p {
-  color: #d4d4d4;
+  color: var(--muted-foreground);
   line-height: 1.6;
   margin: 0;
 }
 
 .entity-section ol {
-  color: #d4d4d4;
+  color: var(--muted-foreground);
   padding-left: 20px;
 }
 
@@ -2630,10 +2576,10 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in oklch, var(--background) 3%, transparent);
+  border: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
   border-radius: 8px;
-  color: #d4d4d4;
+  color: var(--muted-foreground);
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: left;
@@ -2641,13 +2587,13 @@ body {
 }
 
 .entity-link:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in oklch, var(--background) 10%, transparent);
   border-color: rgba(138, 43, 226, 0.4);
   color: var(--neon-glow);
 }
 
 .entity-link svg {
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   transition: color 0.2s ease;
 }
 
@@ -2684,24 +2630,24 @@ body {
   flex-direction: column;
   gap: 16px;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.02);
+  background: color-mix(in oklch, var(--background) 5%, transparent);
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
 }
 
 .flow-state-card {
   display: flex;
   flex-direction: column;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: color-mix(in oklch, var(--background) 5%, transparent);
+  border: 1px solid color-mix(in oklch, var(--border) 50%, transparent);
   border-radius: 8px;
   position: relative;
   transition: all 0.2s ease;
 }
 
 .flow-state-card:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in oklch, var(--background) 10%, transparent);
   border-color: rgba(138, 43, 226, 0.4);
 }
 
@@ -2725,7 +2671,7 @@ body {
 .flow-state-title {
   font-size: 16px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--foreground) ;
   margin: 0;
 }
 
@@ -2756,7 +2702,7 @@ body {
 }
 
 .flow-state-description {
-  color: #d4d4d4;
+  color: var(--muted-foreground);
   font-size: 14px;
   margin-bottom: 12px;
   line-height: 1.4;
@@ -2790,7 +2736,7 @@ body {
   align-items: center;
   justify-content: center;
   margin: 8px 0;
-  color: #a1a1aa;
+  color: var(--muted-foreground);
 }
 
 .flow-state-arrow svg {
@@ -2803,7 +2749,7 @@ body {
 
 .flow-transitions-label {
   font-size: 12px;
-  color: #a1a1aa;
+  color: var(--muted-foreground);
   margin-bottom: 4px;
 }
 
@@ -2817,7 +2763,12 @@ body {
   font-size: 10px;
   padding: 2px 6px;
   background: rgba(59, 130, 246, 0.2);
-  color: #60a5fa;
+  color: var(--accent);
   border: 1px solid rgba(59, 130, 246, 0.4);
   border-radius: 8px;
+}
+
+::view-transition-old(root), ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
 }

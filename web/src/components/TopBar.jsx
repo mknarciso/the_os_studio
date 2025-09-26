@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react';
 import { WandSparkles } from 'lucide-react';
 import { ApiService } from '../services/api';
+import { Button } from './ui/button';
+import { AnimatedThemeToggler } from './ui/animated-theme-toggler';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
 
 export function TopBar({ namespace, app, onContextChange, showChat, onToggleChat }) {
   const [namespaceApps] = useState(['quero/flow', 'core/agents', 'core/configs']);
@@ -52,22 +61,29 @@ export function TopBar({ namespace, app, onContextChange, showChat, onToggleChat
         </div>
         
         <div className="top-bar-section">
-          <span className="top-bar-label">App:</span>
-          <select 
-            className="top-bar-select" 
+          <Select 
             value={currentNamespaceApp} 
-            onChange={(e) => handleNamespaceAppChange(e.target.value)}
+            onValueChange={handleNamespaceAppChange}
           >
-            {namespaceApps?.map(na => (
-              <option key={na} value={na}>{na}</option>
-            ))}
-          </select>
+            <SelectTrigger className="w-[200px] h-9 px-3 py-1 text-xs">
+              <SelectValue placeholder="Selecione um app" />
+            </SelectTrigger>
+            <SelectContent>
+              {namespaceApps?.map(na => (
+                <SelectItem key={na} value={na}>{na}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
       
       <div className="top-bar-actions">
-        <button
-          className="save-button"
+        <Button asChild size="sm" variant="ghost" title="Alternar tema">
+          <AnimatedThemeToggler />
+        </Button>
+        <Button
+          variant={diffs.count === 0 ? "outline" : "default"}
+          size="sm"
           onClick={async () => {
             try {
               const res = await ApiService.getUnsavedDiffs(namespace, app);
@@ -83,14 +99,15 @@ export function TopBar({ namespace, app, onContextChange, showChat, onToggleChat
           title={diffs.count === 0 ? 'App Salvo' : `Salvar ${diffs.count} alterações`}
         >
           {diffs.count === 0 ? 'App Salvo' : `Salvar ${diffs.count} alterações`}
-        </button>
-        <button
-          className={`ezaz-button ${showChat ? 'active' : ''}`}
+        </Button>
+        <Button
+          variant={showChat ? "default" : "outline"}
+          size="sm"
           onClick={onToggleChat}
           title="Toggle E-Zaz AI Assistant"
         >
           <WandSparkles size={16} />
-        </button>
+        </Button>
       </div>
     </div>
     {showDiffsModal && (
@@ -98,7 +115,7 @@ export function TopBar({ namespace, app, onContextChange, showChat, onToggleChat
         <div style={{ width: 720, maxWidth: '95%', background: '#1e1e1e', border: '1px solid #2a2a2a', borderRadius: 8 }} onClick={(e) => e.stopPropagation()}>
           <div style={{ padding: 16, borderBottom: '1px solid #2a2a2a', display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ fontWeight: 600 }}>Alterações não salvas</div>
-            <button className="save-button" onClick={() => setShowDiffsModal(false)}>Fechar</button>
+            <Button variant="ghost" onClick={() => setShowDiffsModal(false)}>Fechar</Button>
           </div>
           <div style={{ display: 'flex', height: 480 }}>
             <div style={{ width: 320, borderRight: '1px solid #2a2a2a', overflow: 'auto' }}>
@@ -115,7 +132,7 @@ export function TopBar({ namespace, app, onContextChange, showChat, onToggleChat
             <DiffPreview selected={selectedDiff} />
           </div>
           <div style={{ padding: 12, borderTop: '1px solid #2a2a2a', textAlign: 'right' }}>
-            <button className="save-button" disabled>{diffs.count === 0 ? 'Nada para salvar' : 'Salvar (em breve)'}</button>
+            <Button disabled>{diffs.count === 0 ? 'Nada para salvar' : 'Salvar (em breve)'}</Button>
           </div>
         </div>
       </div>

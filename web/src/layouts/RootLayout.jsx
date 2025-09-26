@@ -3,6 +3,7 @@ import { useState, useMemo } from 'react';
 import { TopBar } from '../components/TopBar';
 import { NavigationSidebar } from '../components/NavigationSidebar';
 import { MainContent } from '../components/MainContent';
+import { LightRays } from "@/components/ui/light-rays"
 
 export function RootLayout() {
   const navigate = useNavigate();
@@ -24,7 +25,8 @@ export function RootLayout() {
   };
 
   return (
-    <div className="app">
+    <div className="app relative" style={{ backgroundColor: "var(--background)" }}>
+      <LightRays color="var(--primary)" />
       <TopBar
         namespace={namespace}
         app={app}
