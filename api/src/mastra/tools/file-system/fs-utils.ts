@@ -23,7 +23,7 @@ export const SlugSchema = z
   .min(1)
   .regex(/^[a-zA-Z0-9_\-]+$/, 'Somente letras, números, _ e - são permitidos');
 
-export const AllowedExtensionSchema = z.enum(['.js', '.jsx', '.ts']);
+export const AllowedExtensionSchema = z.enum(['.js', '.jsx', '.ts', '.json']);
 
 export type ToolArea = z.infer<typeof AreaSchema>;
 
@@ -86,7 +86,7 @@ export const ensureWithinBase = async (baseDir: string, target: string): Promise
 
 export const assertAllowedExtension = (fileName: string) => {
   const ext = fileName.slice(fileName.lastIndexOf('.'));
-  if (!['.js', '.jsx', '.ts'].includes(ext)) {
+  if (!['.js', '.jsx', '.ts', '.json'].includes(ext)) {
     throw new Error('Extensão não permitida. Use .js, .jsx ou .ts');
   }
 };
@@ -137,11 +137,13 @@ export type OsAppPaths = {
   };
   // supabase
   supabase: {
-    root: string; // supabase
-    migrationsDir: string; // supabase/migrations
-    seedDir: string; // supabase/seed/{namespace}/{app}
-    functionsAppDir: string; // supabase/functions/app-{namespace}-{app}
-    functionsRoutersDir: string; // supabase/functions
+  root: string; // supabase
+  migrationsDir: string; // supabase/migrations
+  seedDir: string; // supabase/seed/{namespace}/{app}
+  functionsAppDir: string; // supabase/functions/app-{namespace}-{app}
+  functionsRoutersDir: string; // supabase/functions
+  schemasDir: string; // supabase/schemas/{namespace}/{app}
+  schemasFile: string; // supabase/schemas/{namespace}/{app}/schema.json
   };
 };
 
@@ -211,6 +213,8 @@ export const resolveOsAppPaths = async (
       seedDir: path.resolve(supabaseRoot, 'seed', namespace, app),
       functionsAppDir: path.resolve(supabaseRoot, 'functions', `app-${namespace}-${app}`),
       functionsRoutersDir: path.resolve(supabaseRoot, 'functions'),
+      schemasDir: path.resolve(supabaseRoot, 'schemas', namespace, app),
+      schemasFile: path.resolve(supabaseRoot, 'schemas', namespace, app, 'schema.json'),
     },
   };
 };

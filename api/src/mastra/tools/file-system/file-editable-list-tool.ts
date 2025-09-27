@@ -128,6 +128,13 @@ export const fileEditableListTool: Tool<typeof inputSchema, typeof outputSchema>
       await walkComponents(os.web.componentsDir);
     }
 
+    // Schemas: supabase/schemas/{namespace}/{app}/schema.json (exposto em data)
+    const schemaExists = await fs.stat(os.supabase.schemasFile).then(() => true).catch(() => false);
+    if (schemaExists) {
+      const osSchemaFile = await toOsPathFromFull(os.supabase.schemasFile);
+      dataPaths.push(osSchemaFile);
+    }
+
     // Automations: functions app + router triggers for this app
     const automationsPaths: string[] = [];
     const hasFunctionsApp = await fs.stat(os.supabase.functionsAppDir).then(() => true).catch(() => false);

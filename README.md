@@ -61,7 +61,8 @@ Acesse: http://localhost:4111 para o playground/tracing de Mastra-AI
 
 ### 🔄 Next Steps
 - **Deploy Engine**:
-  [ ] Botão para salvar alterações no App, com visualização de diff
+  [x] Botão para salvar alterações no App, com visualização de diff
+  [x] Adicionar o commit ao git do app
   [ ] Botão para publicar alterações no workspace de produção
   [ ] Definir melhor qual a fonte de verdade das entidades de dados, e onde fica
   [ ] Supabase para gerenciar acesso ao Studio e secrets dos clientes
@@ -91,6 +92,19 @@ O sistema trabalha com:
 
 ## 🎯 Seções
 
+### Top Bar
+- Botão de Salvar App:
+  [x] Verifica diferenças entre os arquivos do osPath e do appPath, se houver diferenças, habilita o botão de salvar
+  [x] Ao clicar em salvar, abre um modal com os diffs dos arquivos (comparando osPath e appPath)
+  [x] Ao clicar em salvar, chama o endpoint /apply-diffs com os arquivos a serem salvos
+  [-] O endpoint /apply-diffs no back, faz segue as seguintes etapas
+    [x] Copia os arquivos de osPath para appPath
+    [x] Garante que o git está na raiz do git do app (apps/{namespace}/{app}), o git deve ter o nome: apps-{namespace}-{app}.git e estar na branch 'main'
+    [x] Faz o `git add .`,  adicionando todos os arquivos da pasta (apps/{namespace}/{app}) em staged changes
+    [x] Faz o `git commit -m {message}` com a mensagem recebida na request. Se não houver 'message' na request, usa uma iso timestamp
+    [x] Faz o `git push`
+
+
 ### Documentation
 - Renderiza `docs.md` do app
 - Markdown simples com syntax highlighting
@@ -116,51 +130,51 @@ O sistema trabalha com:
 
 ## 🔌 API Endpoints
 
-### Arquivos
-- `POST /files/save` - Salvar arquivo
-- `GET /files/tree/:customer/:namespace/:app` - Árvore de arquivos
-- `GET /files/content/:customer/:namespace/:app` - Conteúdo de arquivo
+Base: http://localhost:3001
 
+### Files
+- `POST /files/save` — Salvar arquivo
+- `GET /files/tree/:namespace/:app?subPath=` — Árvore de arquivos (filtra por subdiretório)
+- `GET /files/content/:namespace/:app?path=` — Conteúdo de arquivo (caminho relativo)
+- `GET /files/content-by-os?path=` — Conteúdo via caminho absoluto do OS
+- `GET /files/content-by-app?path=` — Conteúdo via caminho relativo ao app
+
+### Git
+- `GET /git/unsaved-diffs?namespace=&app=&verbose=` — Lista diffs não salvos
+- `POST /git/apply-diffs` — Aplica diffs
+  - body: `{ namespace, app, files?: [{ osPath?, appPath? }] }`
+
+### Documentation
+- `GET /documentation?namespace=&app=` — Lista documentos
+- `GET /documentation/app?namespace=&app=` — Documento do app
+- `PUT /documentation/app?namespace=&app=` — Atualiza documento do app
+- `GET /documentation/:entityType?namespace=&app=` — Lista entidades
+- `POST /documentation/:entityType?namespace=&app=` — Cria entidade
+- `PUT /documentation/:entityType/:slug?namespace=&app=` — Atualiza entidade
+- `DELETE /documentation/:entityType/:slug?namespace=&app=` — Remove entidade
+
+### AI
+- `POST /ai/threads` — Cria thread
+- `POST /ai/threads/:threadId/messages/stream` — Envia mensagem (SSE)
+- `GET /ai/threads` — Lista threads
+- `GET /ai/threads/:threadId` — Detalhe da thread
+- `DELETE /ai/threads/:threadId` — Remove thread
+- `POST /ai/threads/:threadId/messages` — Envia mensagem
+- `GET /ai/threads/:threadId/messages` — Lista mensagens
+- `POST /ai/test/validate-message` — Valida payload de mensagem
+- `GET /ai/graph` — Grafo JSON
+- `GET /ai/graph.mermaid` — Grafo Mermaid (text/plain)
+- `GET /ai/graph.html` — Grafo em HTML
+- `POST /ai/ui/run` — Executa pipeline de UI
+  - body: `{ action: 'init_db'|'update_from_file'|'list_all'|'update_all', namespace, app, filePath? }`
+
+### Branding
+- `GET /branding/content?path=` — Conteúdo de arquivo de branding
+- `POST /branding/run` — Executa workflow de branding
+- `POST /branding/test` — Executa teste do workflow
+      
 ### Parâmetros
 - `subPath` - Filtrar por subdiretório (data, controllers, pages)
 - `path` - Caminho relativo do arquivo
-
-## 🎨 Design System
-
-### Cores
-- **Background**: `#1e1e1e` (VS Code Dark)
-- **Sidebar**: `#252526`
-- **Borders**: `#3e3e42`
-- **Active**: `#007acc` (VS Code Blue)
-- **Text**: `#d4d4d4` / `#cccccc`
-
-### Componentes
-- **Top Bar**: 48px altura, seletores
-- **Navigation**: Sidebar 240px, ícones + descrições
-- **File Tree**: 280px, árvore expansível
-- **Chat**: 320px, mensagens + input
-- **Tabs**: Editor/Preview com controles
-
-## 🛠️ Tecnologias
-
-### Backend (studio-api)
-- **NestJS** - Framework Node.js
-- **TypeScript** - Tipagem estática
-- **File System** - Manipulação de arquivos
-
-### Frontend (studio-web)
-- **React** - Interface de usuário
-- **Vite** - Build tool e dev server
-- **Monaco Editor** - Editor de código
-- **Lucide React** - Ícones
-- **CSS** - Estilização customizada
-
-## 📝 Próximos Passos
-
-1. **Integração Chat AI** - Conectar com LLM real
-2. **Preview Components** - Renderização de React components
-3. **Automations** - Interface para triggers/workflows
-4. **Public Pages** - Gerenciamento de páginas públicas
-5. **Agent Builder** - Construtor de bots
-6. **Temas** - Suporte a temas claro/escuro
-7. **Colaboração** - Edição em tempo real
+- `osPath` - Caminho relativo à raiz do OS para um arquivo ou pasta. Exemplo: "web/src/pages/quero/flow/FluxoCompras.jsx"
+- `appPath` - Caminho relativo à raiz do git do app específico para um arquivo ou pasta. Exemplo: "quero/flow/pages/FluxoCompras.jsx"

@@ -36,11 +36,11 @@ export class ApiService {
     return response.json();
   }
 
-  static async applyDiffs(namespace, app, files) {
+  static async applyDiffs(namespace, app, files, message) {
     const response = await fetch(`${API_BASE_URL}/git/apply-diffs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ namespace, app, files }),
+      body: JSON.stringify({ namespace, app, files, message }),
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Failed to apply diffs' }));

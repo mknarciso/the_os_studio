@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FileText, Database, Shield, Layout, Zap, Globe, Bot, Paintbrush, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Button } from './ui/button';
 
 export function NavigationSidebar({ activeSection, onSectionChange, namespace, app }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -69,34 +69,36 @@ export function NavigationSidebar({ activeSection, onSectionChange, namespace, a
         {menuItems.map(item => {
           const Icon = item.icon;
           return (
-            <div
+            <Button
               key={item.id}
-              className={`nav-item ${activeSection === item.id ? 'active' : ''} ${item.disabled ? 'disabled' : ''}`}
+              variant="ghost"
+              className={`nav-item h-12 justify-start flex items-center ${activeSection === item.id ? 'active' : ''} ${item.disabled ? 'disabled' : ''}`}
               onClick={() => !item.disabled && onSectionChange(item.id, item.path)}
-              style={{ 
-                opacity: item.disabled ? 0.5 : 1,
-                cursor: item.disabled ? 'not-allowed' : 'pointer'
-              }}
+              disabled={item.disabled}
+              type="button"
             >
               <Icon className="icon" size={16} />
               {!collapsed && (
-                <div>
+                <div className="flex flex-col items-start text-left">
                   <div className="label">{item.label}</div>
                   <div className="description">{item.description}</div>
                 </div>
               )}
-            </div>
+            </Button>
           );
         })}
       </div>
       <div className="nav-footer">
-        <button
+        <Button
+          variant="outline"
+          size="icon"
           className="collapse-toggle"
           onClick={() => setCollapsed(!collapsed)}
           title={collapsed ? 'Expandir menu' : 'Diminuir menu'}
+          type="button"
         >
           {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-        </button>
+        </Button>
       </div>
     </div>
   );

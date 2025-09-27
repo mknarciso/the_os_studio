@@ -16,10 +16,10 @@ export class GitController {
 
   @Post('apply-diffs')
   async applyDiffs(
-    @Body() body: { namespace: string; app: string; files?: Array<{ osPath?: string; appPath?: string }> }
+    @Body() body: { namespace: string; app: string; files?: Array<{ osPath?: string; appPath?: string }>; message?: string }
   ) {
-    const { namespace, app, files } = body || {} as any;
-    return this.gitService.applyUnsavedDiffs({ namespace, app, files });
+    const { namespace, app, files, message } = body || {} as any;
+    return this.gitService.applyUnsavedDiffs({ namespace, app, files, message });
   }
 }
 

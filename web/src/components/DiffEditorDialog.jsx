@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DiffEditor } from '@monaco-editor/react';
 import { ApiService } from '../services/api';
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogClose, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
 import { FileTree } from './FileTree';
 import { useIsDark } from '../hooks/useIsDark';
 
@@ -12,7 +13,26 @@ export function DiffEditorDialog({ open, onOpenChange, diffs = [], selectedDiff,
   const [error, setError] = useState(null);
   const [original, setOriginal] = useState('');
   const [modified, setModified] = useState('');
-  const [editorKey, setEditorKey] = useState(0);
+  // We won't rely on key remounts; we'll dispose explicitly on close/submit
+  const diffEditorRef = useRef(null);
+  const [commitMessage, setCommitMessage] = useState('');
+
+  // Safely detach models and dispose editor to avoid Monaco race during unmount/close
+  const safeDispose = () => {
+    const editor = diffEditorRef.current;
+    if (!editor) return;
+    try {
+      if (typeof editor.setModel === 'function') {
+        editor.setModel({ original: null, modified: null });
+      }
+    } catch (_) {}
+    try {
+      if (typeof editor.dispose === 'function') {
+        editor.dispose();
+      }
+    } catch (_) {}
+    diffEditorRef.current = null;
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -38,8 +58,6 @@ export function DiffEditorDialog({ open, onOpenChange, diffs = [], selectedDiff,
         if (!cancelled) {
           setOriginal(left);
           setModified(right);
-          // Force DiffEditor remount to avoid model dispose race when swapping files
-          setEditorKey((k) => k + 1);
         }
       } catch (e) {
         if (!cancelled) setError(e.message || 'Falha ao carregar conteúdo');
@@ -56,8 +74,23 @@ export function DiffEditorDialog({ open, onOpenChange, diffs = [], selectedDiff,
   const tree = buildTreeFromDiffs(diffs, namespace, app);
   const customTree = convertToFileTree(tree, namespace, app);
 
+  const handleOpenChange = (next) => {
+    if (!next) {
+      // Detach models and dispose editor before portal unmounts
+      safeDispose();
+    }
+    if (onOpenChange) onOpenChange(next);
+  };
+
+  useEffect(() => {
+    return () => {
+      // Component unmount safety
+      safeDispose();
+    };
+  }, []);
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Revise alterações para salvar</DialogTitle>
@@ -87,12 +120,14 @@ export function DiffEditorDialog({ open, onOpenChange, diffs = [], selectedDiff,
               <div style={{ padding: 16, color: '#9ba3af' }}>Selecione um arquivo para ver as diferenças</div>
             ) : (
               <DiffEditor
-                key={editorKey}
                 height="70vh"
                 theme={isDark ? 'vs-dark' : 'light'}
                 language={language}
                 original={original}
                 modified={modified}
+                onMount={(editor /* monaco */) => {
+                  diffEditorRef.current = editor;
+                }}
                 options={{
                   readOnly: true,
                   renderSideBySide: true,
@@ -105,6 +140,13 @@ export function DiffEditorDialog({ open, onOpenChange, diffs = [], selectedDiff,
           </div>
         </div>
         <DialogFooter>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Input
+              placeholder="Mensagem do commit (opcional)"
+              value={commitMessage}
+              onChange={(e) => setCommitMessage(e.target.value)}
+            />
+          </div>
           <DialogClose asChild>
             <Button variant="ghost">Fechar</Button>
           </DialogClose>
@@ -112,9 +154,17 @@ export function DiffEditorDialog({ open, onOpenChange, diffs = [], selectedDiff,
             disabled={!diffs?.length}
             onClick={async () => {
               try {
-                await ApiService.applyDiffs(namespace, app, diffs.map(d => ({ osPath: d.osPath, appPath: d.appPath })).filter(d => d.osPath && d.appPath));
+                // Detach models and dispose before apply and close to avoid Monaco dispose race
+                safeDispose();
+                await ApiService.applyDiffs(
+                  namespace,
+                  app,
+                  diffs.map(d => ({ osPath: d.osPath, appPath: d.appPath })).filter(d => d.osPath && d.appPath),
+                  commitMessage && commitMessage.trim().length ? commitMessage.trim() : undefined
+                );
                 if (onApplied) onApplied();
                 try { window.dispatchEvent(new CustomEvent('studio:ai-tools-finished')); } catch {}
+                setCommitMessage('');
                 onOpenChange(false);
               } catch (e) {
                 // TODO: show toast

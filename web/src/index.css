@@ -246,7 +246,7 @@ body {
 
 /* Navigation Sidebar */
 .nav-sidebar {
-  width: 240px;
+  width: 270px;
   display: flex;
   flex-direction: column;
   padding: 16px 0 16px 16px;
@@ -260,7 +260,7 @@ body {
 .nav-menu {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 12px;
 }
 
 .nav-item {

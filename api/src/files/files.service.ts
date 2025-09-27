@@ -36,6 +36,17 @@ export class FilesService {
         app,
         rest,
       );
+    } else if (normalizedRelPath.startsWith('data/schemas/')) {
+      const rest = normalizedRelPath.replace(/^data\/schemas\//, '');
+      fullPath = path.join(
+        this.basePath,
+        'supabase',
+        'schemas',
+        namespace,
+        app,
+        rest,
+      );
+      try { await fs.promises.mkdir(path.dirname(fullPath), { recursive: true }); } catch {}
     } else if (normalizedRelPath.startsWith('automations/app/')) {
       const rest = normalizedRelPath.replace(/^automations\/app\//, '');
       fullPath = path.join(
@@ -167,6 +178,7 @@ export class FilesService {
     const functionsAppDir = path.join(supabaseBase, 'functions', `app-${namespace}-${app}`);
     const functionsRouterUserDir = path.join(supabaseBase, 'functions', 'router-on-user-events', `app-${namespace}-${app}`);
     const controllersBase = path.join(this.basePath, 'backend', 'src', 'api-web', namespace, app);
+    const schemasDir = path.join(supabaseBase, 'schemas', namespace, app);
 
     const rel = (subPath || '').replace(/^\.\/+/, '').replace(/\\/g, '/');
 
@@ -263,6 +275,17 @@ export class FilesService {
 
         const seedTree = await buildPrefixed(seedBaseDir, 'data/seed');
 
+        // Schemas folder under data
+        let schemasChildren: any[] = [];
+        try {
+          const schemaItems = await fs.promises.readdir(schemasDir).catch(() => [] as string[]);
+          schemasChildren = (schemaItems || []).map((f: string) => ({
+            name: f,
+            type: 'file',
+            path: `data/schemas/${f}`,
+          }));
+        } catch {}
+
         return {
           tree: {
             name: 'data',
@@ -270,7 +293,8 @@ export class FilesService {
             path: 'data',
             children: [
               { name: 'migrations', type: 'directory', path: 'data/migrations', children: migrationChildren },
-              { name: 'seed', type: 'directory', path: seedTree.path, children: seedTree.children || [] }
+              { name: 'seed', type: 'directory', path: seedTree.path, children: seedTree.children || [] },
+              { name: 'schemas', type: 'directory', path: 'data/schemas', children: schemasChildren }
             ]
           }
         };
@@ -385,6 +409,10 @@ export class FilesService {
         const rest = normalizedRelPath.replace(/^controllers\//, '');
         candidates.push(path.join(this.basePath, 'backend', 'src', 'api-web', namespace, app, rest));
       }
+    }
+    if (normalizedRelPath.startsWith('data/schemas/')) {
+      const rest = normalizedRelPath.replace(/^data\/schemas\//, '');
+      candidates.push(path.join(this.basePath, 'supabase', 'schemas', namespace, app, rest));
     }
     // Fallback to original /apps location
     candidates.push(path.join(this.basePath, 'apps', namespace, app, normalizedRelPath));

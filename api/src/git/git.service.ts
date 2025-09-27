@@ -50,6 +50,8 @@ export class GitService {
       } else if (osRelPath.startsWith(`supabase/functions/app-${namespace}-${app}`)) {
         const rel = osRelPath.replace(`supabase/functions/app-${namespace}-${app}/`, 'automations/functions/');
         record.appPath = `apps/${namespace}/${app}/${rel}`;
+      } else if (osRelPath.startsWith(`supabase/schemas/${namespace}/${app}/schema.json`)) {
+        record.appPath = `apps/${namespace}/${app}/data/schemas/schema.json`;
       }
       return record;
     };
@@ -115,6 +117,8 @@ export class GitService {
     const git = simpleGit();
     const runGitRaw = async (args: string[]): Promise<string> => {
       return await new Promise<string>((resolve) => {
+        // eslint-disable-next-line no-console
+        console.log(`[git.raw] running: git ${args.join(' ')}`);
         const child = spawn('git', args, {
           env: { ...process.env, GIT_PAGER: 'cat' },
         });
@@ -207,8 +211,8 @@ export class GitService {
     };
   }
 
-  async applyUnsavedDiffs(params: { namespace: string; app: string; files?: Array<{ osPath?: string; appPath?: string }> }) {
-    const { namespace, app, files } = params || {} as any;
+  async applyUnsavedDiffs(params: { namespace: string; app: string; files?: Array<{ osPath?: string; appPath?: string }>; message?: string }) {
+    const { namespace, app, files, message } = params || {} as any;
     // eslint-disable-next-line no-console
     console.log('[applyUnsavedDiffs] received params:', JSON.stringify(params, null, 2));
 
@@ -263,6 +267,73 @@ export class GitService {
         // eslint-disable-next-line no-console
         console.error(`[applyUnsavedDiffs] FAILED to copy ${t.osPath}:`, e);
       }
+    }
+
+    // After copying, ensure we are in the app git root and on branch 'main', then add/commit/push
+    const appRepoRoot = pathMod.resolve(workspaceRoot, 'apps', namespace, app);
+
+    const runGit = async (args: string[]) => {
+      return await new Promise<{ code: number; stdout: string; stderr: string }>((resolve) => {
+        // eslint-disable-next-line no-console
+        console.log(`[applyUnsavedDiffs] running: git ${args.join(' ')} (cwd=${appRepoRoot})`);
+        const child = spawn('git', args, {
+          cwd: appRepoRoot,
+          env: { ...process.env, GIT_PAGER: 'cat' },
+        });
+        let stdout = '';
+        let stderr = '';
+        child.stdout.on('data', (d) => (stdout += d.toString()));
+        child.stderr.on('data', (d) => (stderr += d.toString()));
+        child.on('error', () => resolve({ code: 1, stdout, stderr }));
+        child.on('close', (code) => resolve({ code: Number(code ?? 0), stdout, stderr }));
+      });
+    };
+
+    try {
+      // Verify remote 'origin' repository name matches apps-{namespace}-{app}.git
+      const remoteRes = await runGit(['remote', 'get-url', 'origin']);
+      const remoteUrl = (remoteRes.stdout || '').trim();
+      if (remoteUrl) {
+        let pathPart = remoteUrl;
+        if (!pathPart.includes('://') && pathPart.includes(':')) {
+          // Handle SSH form git@host:org/repo.git
+          pathPart = pathPart.split(':').pop() || pathPart;
+        }
+        const normalized = pathPart.replace(/\\/g, '/');
+        const lastSegment = (normalized.split('/').pop() || normalized).trim();
+        const expectedName = `apps-${namespace}-${app}.git`;
+        if (lastSegment !== expectedName) {
+          throw new Error(`[applyUnsavedDiffs] ERROR: origin remote is '${lastSegment}', expected '${expectedName}'.`);
+        }
+      } else {
+        throw new Error('[applyUnsavedDiffs] ERROR: origin remote not found');
+      }
+
+      // Ensure on branch 'main'
+      const branchRes = await runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
+      const currentBranch = (branchRes.stdout || '').trim();
+      if (currentBranch !== 'main') {
+        await runGit(['checkout', '-B', 'main']);
+      }
+
+      // Stage all, commit with provided message or ISO timestamp
+      await runGit(['add', '.']);
+      const commitMessage = (typeof message === 'string' && message.trim().length > 0) ? message.trim() : new Date().toISOString();
+      const commitRes = await runGit(['commit', '-m', commitMessage]);
+      if (commitRes.code !== 0 && !/nothing to commit/i.test(commitRes.stderr || commitRes.stdout)) {
+        // eslint-disable-next-line no-console
+        throw new Error(`[applyUnsavedDiffs] commit returned non-zero exit code: ${commitRes.stderr}`);
+      }
+
+      // Push to origin main (set upstream if needed)
+      const pushRes = await runGit(['push', '-u', 'origin', 'main']);
+      if (pushRes.code !== 0) {
+        // eslint-disable-next-line no-console
+        throw new Error(`[applyUnsavedDiffs] push returned non-zero exit code: ${pushRes.stderr}`);
+      }
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('[applyUnsavedDiffs] git operations failed:', e);
     }
 
     // eslint-disable-next-line no-console
