@@ -153,7 +153,7 @@ export const LightRays = forwardRef<HTMLDivElement, LightRaysProps>(
             }
           />
           {rays.map((ray) => (
-            <Ray {...ray} />
+            <Ray key={ray.id} {...ray} />
           ))}
         </div>
       </div>

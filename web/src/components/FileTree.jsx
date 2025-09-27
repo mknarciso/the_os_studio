@@ -2,17 +2,45 @@ import { useState, useEffect } from 'react';
 import { ChevronRight, ChevronDown, FileText, Code, Image, Settings, Database, Palette, Globe, Package } from 'lucide-react';
 import { ApiService } from '../services/api';
 
-export function FileTree({ namespace, app, selectedFile, onFileSelect, basePath = '', title = 'Explorer', whitelistRoots = null }) {
+export function FileTree({ namespace, app, selectedFile, onFileSelect, basePath = '', title = 'Explorer', whitelistRoots = null, customTree = null, expandAllOnLoad = false, renderRootChildrenOnly = false }) {
   const [fileTree, setFileTree] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedDirs, setExpandedDirs] = useState(new Set());
 
+  const collectDirs = (node, set) => {
+    if (!node) return;
+    if (node.type === 'directory' && typeof node.path === 'string') set.add(node.path);
+    for (const child of node.children || []) collectDirs(child, set);
+  };
+
   useEffect(() => {
+    if (customTree) {
+      // Use provided tree (diffs-only, etc.)
+      setLoading(true);
+      setError(null);
+      try {
+        setFileTree(customTree);
+        if (customTree && expandedDirs.size === 0) {
+          if (expandAllOnLoad) {
+            const all = new Set();
+            collectDirs(customTree, all);
+            setExpandedDirs(all);
+          } else {
+            setExpandedDirs(new Set([customTree.path]));
+          }
+        }
+      } catch (e) {
+        setError((e && e.message) || 'Failed to load tree');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
     if (namespace && app) {
       loadFileTree();
     }
-  }, [namespace, app, basePath]);
+  }, [namespace, app, basePath, customTree]);
 
   const loadFileTree = async () => {
     try {
@@ -98,14 +126,14 @@ export function FileTree({ namespace, app, selectedFile, onFileSelect, basePath 
               height: '22px',
               cursor: 'pointer',
               fontSize: '13px',
-              color: '#cccccc',
-              backgroundColor: isSelected ? '#37373d' : 'transparent',
+              color: "var(--foreground)",
+              backgroundColor: isSelected ? "color-mix(in srgb, var(--accent) 10%, var(--foreground) 10%)" : 'transparent',
               borderRadius: '3px',
               margin: '1px 4px',
             }}
             onClick={() => toggleDirectory(item.path)}
             onMouseEnter={(e) => {
-              if (!isSelected) e.currentTarget.style.backgroundColor = '#2a2d2e';
+              if (!isSelected) e.currentTarget.style.backgroundColor = "color-mix(in srgb, var(--accent) 20%, var(--foreground) 20%)";
             }}
             onMouseLeave={(e) => {
               if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
@@ -141,14 +169,14 @@ export function FileTree({ namespace, app, selectedFile, onFileSelect, basePath 
             height: '22px',
             cursor: 'pointer',
             fontSize: '13px',
-            color: '#cccccc',
-            backgroundColor: isSelected ? '#37373d' : 'transparent',
+            color: "var(--foreground)",
+            backgroundColor: isSelected ? "color-mix(in srgb, var(--accent) 10%, var(--foreground) 10%)" : 'transparent',
             borderRadius: '3px',
             margin: '1px 4px',
           }}
           onClick={() => onFileSelect(fullPath)}
           onMouseEnter={(e) => {
-            if (!isSelected) e.currentTarget.style.backgroundColor = '#2a2d2e';
+            if (!isSelected) e.currentTarget.style.backgroundColor = "color-mix(in srgb, var(--accent) 20%, var(--foreground) 20%)";
           }}
           onMouseLeave={(e) => {
             if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
@@ -173,7 +201,7 @@ export function FileTree({ namespace, app, selectedFile, onFileSelect, basePath 
 
   if (loading) {
     return (
-      <div style={{ padding: '8px', color: '#A0A0A0', fontSize: '12px' }}>Loading…</div>
+      <div style={{ padding: '8px', color: "var(--muted-foreground)", fontSize: '12px' }}>Loading…</div>
     );
   }
 
@@ -182,8 +210,12 @@ export function FileTree({ namespace, app, selectedFile, onFileSelect, basePath 
   }
 
   return (
-    <div style={{ minWidth: 0, overflow: 'auto' }}>
-      {fileTree && renderTreeItem(fileTree)}
+    <div style={{ minWidth: 0, overflow: 'auto', background: "var(--background)", color: "var(--foreground)" }} className="py-2">
+      {fileTree && (
+        renderRootChildrenOnly && Array.isArray(fileTree.children)
+          ? fileTree.children.map((child) => renderTreeItem(child))
+          : renderTreeItem(fileTree)
+      )}
     </div>
   );
 }

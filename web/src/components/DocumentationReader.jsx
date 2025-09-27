@@ -1,5 +1,6 @@
 import { useMemo, useRef, useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
+import { useIsDark } from '../hooks/useIsDark';
 
 function ensureArray(value) {
   if (!value) return [];
@@ -156,6 +157,7 @@ function buildMarkdown(doc) {
 }
 
 export function DocumentationReader({ documentation }) {
+  const isDark = useIsDark();
   const markdown = useMemo(() => buildMarkdown(documentation), [documentation]);
   const editorRef = useRef(null);
   const [visibleTopLine, setVisibleTopLine] = useState(1);
@@ -308,7 +310,7 @@ export function DocumentationReader({ documentation }) {
           language="markdown"
           value={markdown}
           onMount={handleMount}
-          theme="vs-dark"
+          theme={isDark ? 'vs-dark' : 'vs'}
           options={{
             readOnly: true,
             domReadOnly: true,

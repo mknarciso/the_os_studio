@@ -5,6 +5,7 @@ import { ApiService } from '../services/api';
 import { editorStore } from '../stores/EditorStore';
 import { FileTree } from './FileTree';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
+import { useIsDark } from '../hooks/useIsDark';
 
 export function MonacoEditor({ namespace, app, selectedFile, onFileSelect, basePath = '', showHeader = true }) {
   const [content, setContent] = useState('');
@@ -18,6 +19,7 @@ export function MonacoEditor({ namespace, app, selectedFile, onFileSelect, baseP
   const previousExplorerWidthRef = useRef(320);
   const shellRef = useRef(null);
   const editorRef = useRef(null);
+  const isDark = useIsDark();
 
   const hasChanges = content !== originalContent;
 
@@ -191,7 +193,7 @@ export function MonacoEditor({ namespace, app, selectedFile, onFileSelect, baseP
       value={content}
       onChange={(value) => setContent(value || '')}
       onMount={handleEditorDidMount}
-      theme="vs-dark"
+      theme={isDark ? 'vs-dark' : 'vs'}
       options={{
         minimap: { enabled: false },
         fontSize: 14,
@@ -231,26 +233,6 @@ export function MonacoEditor({ namespace, app, selectedFile, onFileSelect, baseP
       )}
       
       <div ref={shellRef} className="editor-shell" style={{ display: 'flex', flex: 1, minHeight: 0 }}>
-        {/* Left vertical icon bar */}
-        <div className="editor-left-icons" style={{ width: '40px', borderRight: '1px solid #2a2a2a', background: '#111' }}>
-          <button
-            title="File Explorer"
-            onClick={handleToggleExplorer}
-            className="icon-button"
-            style={{ width: '100%', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            <Folder size={18} />
-          </button>
-          <button
-            title="Source Control (coming soon)"
-            disabled
-            className="icon-button"
-            style={{ width: '100%', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5 }}
-          >
-            <GitBranch size={18} />
-          </button>
-        </div>
-
         <div className="editor-container" style={{ flex: 1, minWidth: 0 }}>
           {showExplorer ? (
             <PanelGroup direction="horizontal">
@@ -267,10 +249,11 @@ export function MonacoEditor({ namespace, app, selectedFile, onFileSelect, baseP
                   }
                 }}
               >
-                <div style={{ height: '100%', background: '#1e1e1e', overflow: 'auto' }}>
+                <div style={{ height: '100%', background: "var(--background)", overflow: 'auto' }}>
                   <FileTree
                     namespace={namespace}
                     app={app}
+                    className="py-2"
                     selectedFile={selectedFile}
                     onFileSelect={onFileSelect}
                     basePath={basePath}

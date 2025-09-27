@@ -21,8 +21,10 @@ type FileDiff = {
 @Injectable()
 export class GitService {
   async getUnsavedDiffs(params: { namespace: string; app: string; verbose?: boolean }) {
-    const { namespace, app } = params;
+    const { namespace, app, verbose } = params;
     const { web, backend, supabase, workspaceRoot, appPath } = await resolveOsAppPaths(namespace, app);
+
+    
 
     const diffs: FileDiff[] = [];
 
@@ -127,6 +129,7 @@ export class GitService {
     // Use existing check_diffs.js under workspace root for robust mapping
     const req = createRequire(__filename);
     const scriptPath = path.resolve(workspaceRoot, 'check_diffs.js');
+    
     let originalCwd = process.cwd();
     try {
       process.chdir(workspaceRoot);
@@ -135,7 +138,11 @@ export class GitService {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const mod = req(scriptPath);
       const rawDiffs = await mod.checkAppDiffs(namespace, app);
+      // Helpers that do not depend on process.cwd()
+      const relOs = (full: string) => path.relative(workspaceRoot, full).replace(/\\/g, '/');
+      const relApp = (full: string) => path.relative(path.resolve(workspaceRoot, 'apps'), full).replace(/\\/g, '/');
       for (const d of rawDiffs || []) {
+        
         const destFull = d.dest ? path.resolve(workspaceRoot, d.dest) : '';
         const sourceFull = d.source ? path.resolve(workspaceRoot, d.source) : '';
         const destExists = d.destExists === true && destFull ? await fs.stat(destFull).then(() => true).catch(() => false) : false;
@@ -143,12 +150,14 @@ export class GitService {
 
         const chosenFull = destExists ? destFull : (sourceExists ? sourceFull : (destFull || sourceFull));
         if (!chosenFull) continue;
-        const osPath = (await toOsPathFromFull(chosenFull)).replace(/\\/g, '/');
-        const appPathMaybe = (sourceExists ? await toAppPathFromFull(sourceFull) : (destExists ? await toAppPathFromFull(sourceFull || destFull).catch(() => '') : '')) as string | '';
+        const osPath = relOs(chosenFull);
+        const appPathMaybe = (sourceExists ? relApp(sourceFull) : (destExists ? relApp(sourceFull || destFull) : '')) as string | '';
 
         const status: FileDiff['status'] = d.status === 'different' ? 'modified' : (d.status === 'dest_missing' ? 'created' : 'deleted');
 
-        const rec: FileDiff = { osPath, appPath: appPathMaybe || undefined, status };
+        const rec: FileDiff = { osPath, appPath: appPathMaybe || undefined, status } as any;
+
+        
 
         // Compute hunks when both exist and are different
         if (destExists && sourceExists && status === 'modified') {
@@ -173,8 +182,14 @@ export class GitService {
               }
               return (added.length || removed.length) ? { added, removed } : undefined;
             })();
-            if (hunks) rec.hunks = hunks;
+            if (hunks) (rec as any).hunks = hunks;
           } catch {}
+        }
+
+        if (verbose) {
+          (rec as any).sourceOsPath = sourceFull ? relOs(sourceFull) : undefined;
+          (rec as any).destOsPath = destFull ? relOs(destFull) : undefined;
+          
         }
 
         diffs.push(rec);
@@ -190,6 +205,69 @@ export class GitService {
       count: diffs.length,
       diffs,
     };
+  }
+
+  async applyUnsavedDiffs(params: { namespace: string; app: string; files?: Array<{ osPath?: string; appPath?: string }> }) {
+    const { namespace, app, files } = params || {} as any;
+    // eslint-disable-next-line no-console
+    console.log('[applyUnsavedDiffs] received params:', JSON.stringify(params, null, 2));
+
+    if (!namespace || !app) {
+      // eslint-disable-next-line no-console
+      console.error('[applyUnsavedDiffs] error: namespace and app are required');
+      throw new Error('namespace and app are required');
+    }
+    const { workspaceRoot } = await resolveOsAppPaths(namespace, app);
+    // eslint-disable-next-line no-console
+    console.log('[applyUnsavedDiffs] workspaceRoot:', workspaceRoot);
+
+    // When files not provided, compute current unsaved diffs set
+    let targets: Array<{ osPath: string; appPath: string }> = [];
+    if (Array.isArray(files) && files.length > 0) {
+      for (const f of files) {
+        const osPath = (f.osPath || '').trim();
+        const appPath = (f.appPath || '').trim();
+        if (osPath && appPath) targets.push({ osPath, appPath });
+      }
+    } else {
+      // eslint-disable-next-line no-console
+      console.log('[applyUnsavedDiffs] no files provided, re-computing diffs...');
+      const current = await this.getUnsavedDiffs({ namespace, app, verbose: true });
+      for (const d of current.diffs || []) {
+        if (d.osPath && d.appPath) targets.push({ osPath: d.osPath, appPath: d.appPath });
+      }
+    }
+    // eslint-disable-next-line no-console
+    console.log(`[applyUnsavedDiffs] processing ${targets.length} targets.`);
+
+    // Copy os -> apps for each target
+    const fsPromises = await import('node:fs/promises');
+    const pathMod = await import('node:path');
+    const copied: Array<{ osPath: string; appPath: string }> = [];
+    for (const t of targets) {
+      try {
+        const fromFull = pathMod.resolve(workspaceRoot, t.osPath);
+        const toFull = pathMod.resolve(workspaceRoot, 'apps', t.appPath);
+        // eslint-disable-next-line no-console
+        console.log(`[applyUnsavedDiffs] copying from: ${fromFull} to: ${toFull}`);
+        
+        // Ensure destination directory exists
+        const dir = pathMod.dirname(toFull);
+        await fsPromises.mkdir(dir, { recursive: true }).catch(() => {});
+        const content = await fsPromises.readFile(fromFull, 'utf8');
+        await fsPromises.writeFile(toFull, content, 'utf8');
+        copied.push(t);
+        // eslint-disable-next-line no-console
+        console.log(`[applyUnsavedDiffs] OK copied ${t.osPath}`);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(`[applyUnsavedDiffs] FAILED to copy ${t.osPath}:`, e);
+      }
+    }
+
+    // eslint-disable-next-line no-console
+    console.log('[applyUnsavedDiffs] result:', { ok: true, copiedCount: copied.length });
+    return { ok: true, copiedCount: copied.length, copied };
   }
 }
 

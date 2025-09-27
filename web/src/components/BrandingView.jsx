@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { ApiService } from '../services/api';
+import { useIsDark } from '../hooks/useIsDark';
 
 export function BrandingView({ activeTab, onTabChange, refreshKey }) {
+  const isDark = useIsDark();
   const [guideline, setGuideline] = useState('');
   const [css, setCss] = useState('');
   const [loading, setLoading] = useState(false);
@@ -127,7 +129,7 @@ export function BrandingView({ activeTab, onTabChange, refreshKey }) {
         language="yaml"
         value={guideline}
         onChange={() => {}}
-        theme="vs-dark"
+        theme={isDark ? 'vs-dark' : 'vs'}
         options={{ readOnly: true, minimap: { enabled: false } }}
       />
     );
@@ -140,7 +142,7 @@ export function BrandingView({ activeTab, onTabChange, refreshKey }) {
         language="css"
         value={css}
         onChange={() => {}}
-        theme="vs-dark"
+        theme={isDark ? 'vs-dark' : 'vs'}
         options={{ readOnly: true, minimap: { enabled: false } }}
       />
     );

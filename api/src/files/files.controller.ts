@@ -28,4 +28,14 @@ export class FilesController {
   ) {
     return this.filesService.getFileContent(namespace, app, relativePath);
   }
+
+  @Get('content-by-os')
+  async getFileContentByOsPath(@Query('path') osPath: string) {
+    return this.filesService.getFileContentByOsPath(osPath);
+  }
+
+  @Get('content-by-app')
+  async getFileContentByAppPath(@Query('path') appPath: string) {
+    return this.filesService.getFileContentByAppPath(appPath);
+  }
 }

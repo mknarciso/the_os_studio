@@ -408,6 +408,42 @@ export class FilesService {
     throw new InternalServerErrorException('Failed to read file');
   }
 
+  async getFileContentByOsPath(osPath: string) {
+    if (!osPath || typeof osPath !== 'string') {
+      throw new BadRequestException('Invalid path');
+    }
+    const requested = path.resolve(this.basePath, osPath);
+    const resolvedBasePath = path.resolve(this.basePath);
+    if (!requested.startsWith(resolvedBasePath)) {
+      throw new BadRequestException('Path outside workspace');
+    }
+    try {
+      await fs.promises.access(requested, fs.constants.R_OK);
+      const content = await fs.promises.readFile(requested, 'utf8');
+      return { content, osPath };
+    } catch (e) {
+      throw new InternalServerErrorException('Failed to read file');
+    }
+  }
+
+  async getFileContentByAppPath(appPath: string) {
+    if (!appPath || typeof appPath !== 'string') {
+      throw new BadRequestException('Invalid path');
+    }
+    const requested = path.resolve(this.basePath, 'apps', appPath);
+    const resolvedBasePath = path.resolve(this.basePath, 'apps');
+    if (!requested.startsWith(resolvedBasePath)) {
+      throw new BadRequestException('Path outside apps directory');
+    }
+    try {
+      await fs.promises.access(requested, fs.constants.R_OK);
+      const content = await fs.promises.readFile(requested, 'utf8');
+      return { content, appPath };
+    } catch (e) {
+      throw new InternalServerErrorException('Failed to read file');
+    }
+  }
+
   private async buildFileTree(currentPath: string, basePath: string): Promise<any> {
     const stats = await fs.promises.stat(currentPath);
     const relativePath = path.relative(basePath, currentPath);

@@ -14,6 +14,7 @@ import 'reactflow/dist/style.css';
 import { ApiService } from '../services/api';
 import { X } from 'lucide-react';
 import Editor from '@monaco-editor/react';
+import { useIsDark } from '../hooks/useIsDark';
 
 // Basic validator that respects the structure from shared `entities.ts`
 function validateEntityStructure(entity) {
@@ -136,6 +137,7 @@ function guessReferencesForEntity(entityName, entityDef, allEntityNames) {
 }
 
 export default function DataSchemaGraph({ namespace, app }) {
+  const isDark = useIsDark();
   const [rawEntities, setRawEntities] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -350,6 +352,7 @@ export default function DataSchemaGraph({ namespace, app }) {
                   defaultLanguage="json"
                   value={editorValue}
                   onChange={onEditorChange}
+                  theme={isDark ? 'vs-dark' : 'vs'}
                   options={{ minimap: { enabled: false }, fontSize: 13, wordWrap: 'on' }}
                 />
               </div>

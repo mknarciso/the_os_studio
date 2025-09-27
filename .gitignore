@@ -9,6 +9,7 @@
 package-lock.json
 api/.mastra/
 api/data/mastra/*
+api/data/ai-chat.json
 
 # Cache
 .DS_Store

@@ -36,6 +36,41 @@ export class ApiService {
     return response.json();
   }
 
+  static async applyDiffs(namespace, app, files) {
+    const response = await fetch(`${API_BASE_URL}/git/apply-diffs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ namespace, app, files }),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Failed to apply diffs' }));
+      throw new Error(error.message || 'Failed to apply diffs');
+    }
+    return response.json();
+  }
+
+  static async getFileContentByOsPath(osPath) {
+    const url = new URL(`${API_BASE_URL}/files/content-by-os`);
+    url.searchParams.set('path', osPath);
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Failed to load file content' }));
+      throw new Error(error.message || 'Failed to load file content');
+    }
+    return response.json();
+  }
+
+  static async getFileContentByAppPath(appPath) {
+    const url = new URL(`${API_BASE_URL}/files/content-by-app`);
+    url.searchParams.set('path', appPath);
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Failed to load file content' }));
+      throw new Error(error.message || 'Failed to load file content');
+    }
+    return response.json();
+  }
+
   static async getFileTree(namespace, app, subPath = '') {
     const url = new URL(`${API_BASE_URL}/files/tree/${namespace}/${app}`);
     if (subPath) {
