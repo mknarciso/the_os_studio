@@ -521,7 +521,7 @@ ui:
 \`\`\`
 `;
 
-    const response = await agent.stream([{ role: 'user', content: prompt }]);
+    const response = await agent.streamVNext([{ role: 'user', content: prompt }]);
     let yaml = '';
     for await (const chunk of response.textStream) { process.stdout.write(chunk); yaml += chunk; }
 

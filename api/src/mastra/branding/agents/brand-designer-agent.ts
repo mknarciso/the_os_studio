@@ -14,7 +14,7 @@ export const brandDesignerAgent = new Agent({
     - Tipografia: inferir famílias comuns se não houver claro no CSS (ex.: Inter, Poppins, Roboto, SF Pro, etc.).
     - Tokens: manter valores práticos para produto digital, usando o padrão de shadcn/ui e tailwindcss.
   `,
-  model: openai('gpt-4o-mini'),
+  model: openai('gpt-5'),
 });
 
 

@@ -38,7 +38,7 @@
  */
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
-import { assertAllowedExtension, toFullPathFromOsPath } from './fs-utils';
+import { assertAllowedExtension, resolveOsAppPaths, toFullPathFromOsPath } from './fs-utils';
 import * as path from 'path';
 import { toolBus } from '../../../utils/event-bus';
 
@@ -102,10 +102,40 @@ export const filePatchTool = createTool({
       throw new Error('Parâmetros inválidos: objeto de entrada não recebido');
     }
 
+    const runtimeContext = (maybeWrapper && maybeWrapper.runtimeContext) || (a0 as any)?.runtimeContext;
+    const namespace = (runtimeContext?.get?.('namespace') as string) || 'quero';
+    const app = (runtimeContext?.get?.('app') as string) || 'flow';
+
     const target = await toFullPathFromOsPath(input.osPath);
     const ext = path.extname(target).toLowerCase();
     if (!ext) throw new Error('Extensão ausente no caminho informado');
     assertAllowedExtension(`file${ext}`);
+
+    const os = await resolveOsAppPaths(namespace, app);
+    const allowedDirectories = [
+      os.web.pagesDir,
+      os.web.componentsDir,
+      path.dirname(os.web.navigationFile),
+      os.backend.controllersDir,
+      os.supabase.functionsAppDir,
+      os.supabase.seedDir,
+      os.supabase.schemasDir,
+      os.supabase.migrationsDir,
+    ]
+      .filter(Boolean)
+      .map(dir => path.resolve(dir));
+
+    const allowedFiles = [os.web.navigationFile]
+      .filter(Boolean)
+      .map(file => path.resolve(file));
+
+    const normalizedTarget = path.resolve(target);
+    const inAllowedDir = allowedDirectories.some(dir => normalizedTarget.startsWith(dir + path.sep));
+    const isExplicitAllowedFile = allowedFiles.some(file => normalizedTarget === file);
+
+    if (!inAllowedDir && !isExplicitAllowedFile) {
+      throw new Error('file-patch-tool: caminho fora das áreas editáveis');
+    }
 
     try {
       const original = await fs.readFile(target, 'utf8');

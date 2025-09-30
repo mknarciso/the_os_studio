@@ -1,7 +1,7 @@
-# Zaz OS – The scalable and flexible Operating System for companies in the AI-era
+# About Zaz OS
 
+## Zaz OS – The scalable and flexible Operating System for companies in the AI-era
 Zaz OS provides a **simple, extensible architecture** to consolidate back-office processes for small and mid-sized companies into a single, integrated system.
-
 At its core, there is a base project (`the_os`) maintained by Zazos. It enforces **opinionated defaults** to simplify the creation of new apps and accelerate iteration with **AI/Vibe-coding**, while guaranteeing **quality, consistency, and security**.
 
 ## Architecture

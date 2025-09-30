@@ -8,6 +8,7 @@ import { filePatchTool } from '../tools/file-system/file-patch-tool';
 import { mastraDocsMcpTool } from './tools/mastra-docs-mcp-tool';
 import { debugPwdTool } from './tools/debug-pwd-tool';
 import { fileEditableListTool } from '../tools/file-system/file-editable-list-tool';
+import { fileReadOnlyListTool } from '../tools/file-system/file-read-only-list-tool';
 import { schemaDetailTool } from '../tools/schema/schema-detail-tool';
 import { schemaSummaryTool } from '../tools/schema/schema-summary-tool';
 import { readFileSync } from 'node:fs';
@@ -94,6 +95,7 @@ export const staffDeveloperAgent: AgentType = new Agent({
     filePatchTool,
     mastraDocsMcpTool,
     fileEditableListTool,
+    fileReadOnlyListTool,
     debugPwdTool,
     schemaDetailTool,
     schemaSummaryTool,
