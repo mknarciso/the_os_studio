@@ -15,5 +15,7 @@ export { fileReadTool } from './file-system/file-read-tool';
 export { fileCreateTool } from './file-system/file-create-tool';
 export { filePatchTool } from './file-system/file-patch-tool';
 export { fileEditableListTool } from './file-system/file-editable-list-tool';
+export { schemaDetailTool } from './schema/schema-detail-tool';
+export { schemaSummaryTool } from './schema/schema-summary-tool';
 
 

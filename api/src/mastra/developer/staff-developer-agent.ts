@@ -8,15 +8,20 @@ import { filePatchTool } from '../tools/file-system/file-patch-tool';
 import { mastraDocsMcpTool } from './tools/mastra-docs-mcp-tool';
 import { debugPwdTool } from './tools/debug-pwd-tool';
 import { fileEditableListTool } from '../tools/file-system/file-editable-list-tool';
+import { schemaDetailTool } from '../tools/schema/schema-detail-tool';
+import { schemaSummaryTool } from '../tools/schema/schema-summary-tool';
 import { readFileSync } from 'node:fs';
 import * as path from 'node:path';
 
 const openai = createOpenAI();
 
 let zazOSreadmeContent = '';
+let instructionsContent = '';
 try {
-  const readmePath = path.resolve(process.cwd(), '..', '..', 'README.md');
+  const readmePath = path.resolve(process.cwd(), '..', '..', 'README.md');  
+  const instructionsPath = path.resolve(process.cwd(), 'instructions.md');
   zazOSreadmeContent = readFileSync(readmePath, 'utf8');
+  instructionsContent = readFileSync(instructionsPath, 'utf8');
 } catch (error) {
   zazOSreadmeContent = 'README não disponível.';
 }
@@ -55,6 +60,10 @@ export const staffDeveloperAgent: AgentType = new Agent({
     - Sempre que possível, preserve estilo existente do projeto.
     - Se necessário consultar Mastra-AI, use o MCP de documentação quando configurado.
     </operation_rules>
+
+    <instructions>
+    ${instructionsContent}
+    </instructions>
     
     <project_context>
     ${zazOSreadmeContent}
@@ -78,7 +87,7 @@ export const staffDeveloperAgent: AgentType = new Agent({
       return base;
     }
   },
-  model: openai('gpt-4o'),
+  model: openai('gpt-5'),
   tools: {
     fileReadTool,
     fileCreateTool,
@@ -86,6 +95,8 @@ export const staffDeveloperAgent: AgentType = new Agent({
     mastraDocsMcpTool,
     fileEditableListTool,
     debugPwdTool,
+    schemaDetailTool,
+    schemaSummaryTool,
   },
 });
 try {

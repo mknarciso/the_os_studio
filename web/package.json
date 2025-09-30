@@ -44,6 +44,7 @@
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
+    "json-edit-react": "^1.1.0",
     "lucide-react": "^0.475.0",
     "motion": "^12.23.22",
     "react": "^18.2.0",

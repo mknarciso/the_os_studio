@@ -63,9 +63,10 @@ Acesse: http://localhost:4111 para o playground/tracing de Mastra-AI
 - **Deploy Engine**:
   [x] Botão para salvar alterações no App, com visualização de diff
   [x] Adicionar o commit ao git do app
-  [ ] Botão para publicar alterações no workspace de produção
+  [x] Supabase compartilhado na nuvem para Preview
   [ ] Definir melhor qual a fonte de verdade das entidades de dados, e onde fica
   [ ] Supabase para gerenciar acesso ao Studio e secrets dos clientes
+  [ ] Botão para publicar alterações no workspace de produção
   [ ] Separar um git para cada cliente, isolando os módulos do OS
   [ ] Script de montagem inicial e de atualização do OS a cada atualização
 - **Workbench**: Gestão de tarefas

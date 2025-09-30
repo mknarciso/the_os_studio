@@ -7,6 +7,8 @@ import { ChatPanel } from './ChatPanel';
 import { EditorSessionStore } from '../stores/EditorSessionStore';
 import PagesGraph from './PagesGraph';
 import DataSchemaGraph from './DataSchemaGraph';
+import SchemaJsonEditor from './SchemaJsonEditor';
+import SchemaJsonPreview from './SchemaJsonPreview';
 import { ReactFlowProvider } from 'reactflow';
 import { BrandingView } from './BrandingView';
 
@@ -185,6 +187,13 @@ export function MainContent({
     }
 
     if (activeTab === 'preview') {
+      if (activeSection === 'data') {
+        return (
+          <div className="graph-panel" style={{ position: 'relative', width: '100%', height: '100%', minHeight: '500px' }}>
+            <SchemaJsonPreview namespace={namespace} app={app} />
+          </div>
+        );
+      }
       return (
         <div className="preview-panel">
           Preview functionality coming soon
@@ -211,6 +220,7 @@ export function MainContent({
         </div>
       );
     }
+
 
     return null;
   };
@@ -267,7 +277,7 @@ export function MainContent({
           Code
         </div>
         <div className={`tab ${activeTab === 'preview' ? 'active' : ''}`} onClick={() => setActiveTab('preview')}>
-          <Edit size={14} />
+          <span style={{ fontWeight: 700, fontFamily: 'var(--font-mono)' }}>{'{}'}</span>
           Preview
         </div>
         {activeSection === 'pages' && (
@@ -282,6 +292,7 @@ export function MainContent({
             {} Schema
           </div>
         )}
+        {activeSection === 'data' && null}
       </div>
     );
   };
