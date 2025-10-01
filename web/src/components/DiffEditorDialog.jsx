@@ -91,12 +91,12 @@ export function DiffEditorDialog({ open, onOpenChange, diffs = [], selectedDiff,
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>Revise alterações para salvar</DialogTitle>
         </DialogHeader>
-        <div style={{ display: 'flex', gap: 0, flex: 1, minHeight: 0 }}>
-          <div style={{ width: 300, borderRight: '1px solid #2a2a2a', overflow: 'auto' }}>
+        <div style={{ display: 'flex', gap: 0, flex: 1, minHeight: 0, maxHeight: '70vh', overflow: 'hidden' }}>
+          <div style={{ width: 300, borderRight: '1px solid var(--border)', overflowY: 'auto', maxHeight: '70vh' }}>
             <FileTree
               namespace={null}
               app={null}
