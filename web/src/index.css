@@ -192,8 +192,9 @@ body {
 }
 
 .logo-image {
-  width: 24px;
-  height: 24px;
+  height: 26px;
+  margin: 4px;
+  margin-left: 15px;
   filter: drop-shadow(0 0 8px color-mix(in oklch, var(--ring) 50%, transparent));
 }
 
@@ -208,6 +209,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-left: 78px;
 }
 
 .top-bar-label {

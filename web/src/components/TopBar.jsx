@@ -57,8 +57,7 @@ export function TopBar({ namespace, app, onContextChange, showChat, onToggleChat
     <div className="top-bar">
       <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
         <div className="top-bar-logo">
-          <img src="/icon.png" alt="Studio Logo" className="logo-image" />
-          <span className="logo-text">Studio</span>
+          <img src="/zaz-studio-white.png" alt="Studio Logo" className="logo-image" />
         </div>
         
         <div className="top-bar-section">
