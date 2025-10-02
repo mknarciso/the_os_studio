@@ -9,6 +9,7 @@
 package-lock.json
 api/.mastra/
 api/data/mastra/*
+!api/data/mastra/.gitkeep
 api/data/ai-chat.json
 
 # Cache
